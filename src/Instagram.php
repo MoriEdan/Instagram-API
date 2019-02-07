@@ -764,7 +764,7 @@ class Instagram implements ExperimentsInterface
      * @throws \InvalidArgumentException
      * @throws \InstagramAPI\Exception\InstagramException
      */
-    protected function _setUser(
+    public function _setUser(
         $username,
         $password)
     {
