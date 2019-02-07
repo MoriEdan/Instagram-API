@@ -49,6 +49,10 @@ class Challenge extends RequestCollection
             ->addPost('device_id', $this->ig->uuid)
             ->getResponse(new Response\LoginResponse());
 
+        if (!$response->getLoggedInUser()) {
+            throw new \InstagramAPI\Exception\TwoFactorException('2FA Fuck');
+        }
+
         $this->ig->_updateLoginState($response);
         $this->ig->_sendLoginFlow(true, $appRefreshInterval);
 
@@ -76,5 +80,18 @@ class Challenge extends RequestCollection
             ->setNeedsAuth(false)
             ->addPost('device_id', $this->ig->uuid)
             ->getResponse(new Response\ChallengeInfoResponse());
+    }
+
+
+    public function submitPhone($phone) {
+
+        $pk = $this->ig->settings->get('pk');
+        $nonce = $this->ig->settings->get('nonce');
+
+        return $this->ig->request("challenge/$pk/$nonce/")
+            ->setNeedsAuth(false)
+            ->addPost('phone_number', $phone)
+            ->addPost('device_id', $this->ig->uuid)
+            ->getResponse(new Response\ChallengeSelectVerifyMethod());
     }
 }
