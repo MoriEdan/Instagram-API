@@ -909,7 +909,7 @@ class Instagram implements ExperimentsInterface
      * @throws \InvalidArgumentException
      * @throws \InstagramAPI\Exception\InstagramException
      */
-    protected function _updateLoginState(
+    public function _updateLoginState(
         Response\LoginResponse $response)
     {
         // This check is just protection against accidental bugs. It makes sure
@@ -1009,7 +1009,7 @@ class Instagram implements ExperimentsInterface
      *                                                   flow attempt, otherwise
      *                                                   `NULL`.
      */
-    protected function _sendLoginFlow(
+    public function _sendLoginFlow(
         $justLoggedIn,
         $appRefreshInterval = 1800)
     {
