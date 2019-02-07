@@ -47,3 +47,7 @@ cscope.out
 cscope.in.out
 cscope.po.out
 ac-php-tags/
+
+
+# test files for new update.
+examples/testNewUpdates.php
