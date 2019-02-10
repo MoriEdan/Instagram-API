@@ -221,6 +221,8 @@ class Instagram implements ExperimentsInterface
     public $timeline;
     /** @var Request\Usertag Collection of Usertag related functions. */
     public $usertag;
+    /** @var Request\Challenge Collection of Challenge related functions. */
+    public $challenge;
 
     /**
      * Constructor.
