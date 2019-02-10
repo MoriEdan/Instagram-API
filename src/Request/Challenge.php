@@ -24,7 +24,6 @@ class Challenge extends RequestCollection
             ->getResponse(new Response\ChallengeInfoResponse());
     }
 
-
     public function selectVerifyMethod($choice) {
 
         $pk = $this->ig->settings->get('pk');
