@@ -44,6 +44,10 @@ class StorageHandler
         'zr_token', // Zero rating token.
         'zr_expires', // Zero rating token expiration timestamp.
         'zr_rules', // Zero rating rewrite rules.
+        'nonce', // Users nonce for challenge checkpoint verification.
+        'pk', // Users pk for challenge checkpoint verification.
+        'datacenter', // Preferred data center (region-based).
+        'presence_disabled', // Whether the presence feature has been disabled by user.
     ];
 
     /**
