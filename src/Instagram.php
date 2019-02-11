@@ -301,6 +301,7 @@ class Instagram implements ExperimentsInterface
         $this->story = new Request\Story($this);
         $this->timeline = new Request\Timeline($this);
         $this->usertag = new Request\Usertag($this);
+        $this->challenge = new Request\Challenge($this);
 
         // Configure the settings storage and network client.
         $self = $this;
