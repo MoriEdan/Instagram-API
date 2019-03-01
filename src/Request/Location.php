@@ -34,6 +34,7 @@ class Location extends RequestCollection
         $query = null)
     {
         $locations = $this->ig->request('location_search/')
+            ->setSignedPost(false)
             ->addParam('rank_token', $this->ig->account_id.'_'.Signatures::generateUUID())
             ->addParam('latitude', $latitude)
             ->addParam('longitude', $longitude);
