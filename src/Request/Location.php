@@ -34,7 +34,6 @@ class Location extends RequestCollection
         $query = null)
     {
         $locations = $this->ig->request('location_search/')
-            ->setSignedPost(false)
             ->addParam('rank_token', $this->ig->account_id.'_'.Signatures::generateUUID())
             ->addParam('latitude', $latitude)
             ->addParam('longitude', $longitude);
@@ -216,6 +215,7 @@ class Location extends RequestCollection
         }
 
         $locationFeed = $this->ig->request("locations/{$locationId}/sections/")
+            ->setSignedPost(false)
             ->addPost('rank_token', $rankToken)
             ->addPost('_uuid', $this->ig->uuid)
             ->addPost('_csrftoken', $this->ig->client->getToken())
@@ -238,6 +238,24 @@ class Location extends RequestCollection
         }
 
         return $locationFeed->getResponse(new Response\LocationFeedResponse());
+    }
+
+    /**
+     * Get the story feed for a location.
+     *
+     * @param string $locationId The internal ID of a location (from a field
+     *                           such as "pk", "external_id" or "facebook_places_id").
+     *
+     * @throws \InvalidArgumentException
+     * @throws \InstagramAPI\Exception\InstagramException
+     *
+     * @return \InstagramAPI\Response\LocationStoryResponse
+     */
+    public function getStory(
+        $locationId)
+    {
+        return $this->ig->request("locations/{$locationId}/story/")
+            ->getResponse(new Response\LocationStoryResponse());
     }
 
     /**
