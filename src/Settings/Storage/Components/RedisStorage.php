@@ -53,21 +53,13 @@ class RedisStorage implements StorageInterface
      */
     public function openLocation(array $locationConfig)
     {
-        if (!isset($locationConfig['redis_host']))  {
-            throw new SettingsException('Missing redis_host variable');
-        }
-
-        if (!isset($locationConfig['redis_port'])) {
-            throw new SettingsException('Missing redis_port variable');
-        }
-
         $this->_dbTableName = (isset($locationConfig['dbtablename']) ? $locationConfig['dbtablename'] : 'account');
 
-        $this->_redis = new Client([
-            'scheme' => 'tcp',
-            'host'   => $locationConfig['redis_host'],
-            'port'   => $locationConfig['redis_port'],
-        ]);
+        if (!isset($locationConfig['redis_url'])) {
+            throw new SettingsException('Missing redis_url variable');
+        }
+
+        $this->_redis = new Client($locationConfig['redis_url']);
     }
 
     public function hasUser($username)
