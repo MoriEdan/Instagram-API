@@ -1,8 +1,11 @@
 <?php
+
 namespace InstagramAPI\Request;
+
 use InstagramAPI\Response;
 use InstagramAPI\Signatures;
 use InstagramAPI\Utils;
+
 /**
  * Functions for exploring and interacting with live broadcasts.
  */
@@ -20,10 +23,11 @@ class Live extends RequestCollection
         return $this->ig->request('live/get_suggested_broadcasts/')
             ->getResponse(new Response\SuggestedBroadcastsResponse());
     }
+
     /**
      * Get top live broadcasts.
      *
-     * @param null|string $maxId Next "maximum ID", used for pagination.
+     * @param string|null $maxId Next "maximum ID", used for pagination.
      *
      * @throws \InstagramAPI\Exception\InstagramException
      *
@@ -36,8 +40,10 @@ class Live extends RequestCollection
         if ($maxId !== null) {
             $request->addParam('max_id', $maxId);
         }
+
         return $request->getResponse(new Response\DiscoverTopLiveResponse());
     }
+
     /**
      * Get status for a list of top broadcast ids.
      *
@@ -53,14 +59,17 @@ class Live extends RequestCollection
         if (!is_array($broadcastIds)) {
             $broadcastIds = [$broadcastIds];
         }
+
         foreach ($broadcastIds as &$value) {
             $value = (string) $value;
         }
         unset($value); // Clear reference.
+
         return $this->ig->request('discover/top_live_status/')
             ->addPost('broadcast_ids', $broadcastIds) // Must be string[] array.
             ->getResponse(new Response\TopLiveStatusResponse());
     }
+
     /**
      * Get broadcast information.
      *
@@ -76,6 +85,7 @@ class Live extends RequestCollection
         return $this->ig->request("live/{$broadcastId}/info/")
             ->getResponse(new Response\BroadcastInfoResponse());
     }
+
     /**
      * Get the viewer list of a broadcast.
      *
@@ -93,6 +103,7 @@ class Live extends RequestCollection
         return $this->ig->request("live/{$broadcastId}/get_viewer_list/")
             ->getResponse(new Response\ViewerListResponse());
     }
+
     /**
      * Get the final viewer list of a broadcast after it has ended.
      *
@@ -108,11 +119,12 @@ class Live extends RequestCollection
         return $this->ig->request("live/{$broadcastId}/get_final_viewer_list/")
             ->getResponse(new Response\FinalViewerListResponse());
     }
+
     /**
      * Get the viewer list of a post-live (saved replay) broadcast.
      *
      * @param string      $broadcastId The broadcast ID in Instagram's internal format (ie "17854587811139572").
-     * @param null|string $maxId       Next "maximum ID", used for pagination.
+     * @param string|null $maxId       Next "maximum ID", used for pagination.
      *
      * @throws \InstagramAPI\Exception\InstagramException
      *
@@ -126,8 +138,10 @@ class Live extends RequestCollection
         if ($maxId !== null) {
             $request->addParam('max_id', $maxId);
         }
+
         return $request->getResponse(new Response\PostLiveViewerListResponse());
     }
+
     /**
      * Get a live broadcast's heartbeat and viewer count.
      *
@@ -145,6 +159,7 @@ class Live extends RequestCollection
             ->addPost('_csrftoken', $this->ig->client->getToken())
             ->getResponse(new Response\BroadcastHeartbeatAndViewerCountResponse());
     }
+
     /**
      * Show question in a live broadcast.
      *
@@ -165,6 +180,7 @@ class Live extends RequestCollection
             ->addPost('_csrftoken', $this->ig->client->getToken())
             ->getResponse(new Response\GenericResponse());
     }
+
     /**
      * Hide question in a live broadcast.
      *
@@ -185,6 +201,7 @@ class Live extends RequestCollection
             ->addPost('_csrftoken', $this->ig->client->getToken())
             ->getResponse(new Response\GenericResponse());
     }
+
     /**
      * Get all received questions in live broadcasts.
      *
@@ -197,6 +214,7 @@ class Live extends RequestCollection
         return $this->ig->request('live/get_questions/')
             ->getResponse(new Response\BroadcastQuestionsResponse());
     }
+
     /**
      * Get questions from a current live broadcast.
      *
@@ -213,6 +231,7 @@ class Live extends RequestCollection
             ->addParam('sources', 'story')
             ->getResponse(new Response\BroadcastQuestionsResponse());
     }
+
     /**
      * Acknowledges (waves at) a new user after they join.
      *
@@ -236,6 +255,7 @@ class Live extends RequestCollection
             ->addPost('_uuid', $this->ig->uuid)
             ->getResponse(new Response\GenericResponse());
     }
+
     /**
      * Post a comment to a live broadcast.
      *
@@ -258,6 +278,7 @@ class Live extends RequestCollection
             ->addPost('offset_to_video_start', 0)
             ->getResponse(new Response\CommentBroadcastResponse());
     }
+
     /**
      * Pin a comment on live broadcast.
      *
@@ -280,6 +301,7 @@ class Live extends RequestCollection
             ->addPost('_csrftoken', $this->ig->client->getToken())
             ->getResponse(new Response\PinCommentBroadcastResponse());
     }
+
     /**
      * Unpin a comment on live broadcast.
      *
@@ -302,6 +324,7 @@ class Live extends RequestCollection
             ->addPost('_csrftoken', $this->ig->client->getToken())
             ->getResponse(new Response\UnpinCommentBroadcastResponse());
     }
+
     /**
      * Get broadcast comments.
      *
@@ -323,6 +346,7 @@ class Live extends RequestCollection
             ->addParam('num_comments_requested', $commentsRequested)
             ->getResponse(new Response\BroadcastCommentsResponse());
     }
+
     /**
      * Get post-live (saved replay) broadcast comments.
      *
@@ -344,6 +368,7 @@ class Live extends RequestCollection
             ->addParam('encoding_tag', $encodingTag)
             ->getResponse(new Response\PostLiveCommentsResponse());
     }
+
     /**
      * Enable viewer comments on your live broadcast.
      *
@@ -362,6 +387,7 @@ class Live extends RequestCollection
             ->addPost('_csrftoken', $this->ig->client->getToken())
             ->getResponse(new Response\EnableDisableLiveCommentsResponse());
     }
+
     /**
      * Disable viewer comments on your live broadcast.
      *
@@ -380,6 +406,7 @@ class Live extends RequestCollection
             ->addPost('_csrftoken', $this->ig->client->getToken())
             ->getResponse(new Response\EnableDisableLiveCommentsResponse());
     }
+
     /**
      * Like a broadcast.
      *
@@ -398,6 +425,7 @@ class Live extends RequestCollection
         if ($likeCount < 1 || $likeCount > 6) {
             throw new \InvalidArgumentException('Like count must be a number from 1 to 6.');
         }
+
         return $this->ig->request("live/{$broadcastId}/like/")
             ->addPost('_uuid', $this->ig->uuid)
             ->addPost('_uid', $this->ig->account_id)
@@ -405,6 +433,7 @@ class Live extends RequestCollection
             ->addPost('user_like_count', $likeCount)
             ->getResponse(new Response\BroadcastLikeResponse());
     }
+
     /**
      * Get a live broadcast's like count.
      *
@@ -423,6 +452,7 @@ class Live extends RequestCollection
             ->addParam('like_ts', $likeTs)
             ->getResponse(new Response\BroadcastLikeCountResponse());
     }
+
     /**
      * Get post-live (saved replay) broadcast likes.
      *
@@ -444,6 +474,7 @@ class Live extends RequestCollection
             ->addParam('encoding_tag', $encodingTag)
             ->getResponse(new Response\PostLiveLikesResponse());
     }
+
     /**
      * Create a live broadcast.
      *
@@ -475,6 +506,7 @@ class Live extends RequestCollection
             ->addPost('internal_only', 0)
             ->getResponse(new Response\CreateLiveResponse());
     }
+
     /**
      * Start a live broadcast.
      *
@@ -510,6 +542,7 @@ class Live extends RequestCollection
             ->addPost('should_send_notifications', (int) $sendNotifications)
             ->getResponse(new Response\StartLiveResponse());
     }
+
     /**
      * End a live broadcast.
      *
@@ -535,6 +568,7 @@ class Live extends RequestCollection
             ->addPost('end_after_copyright_warning', 'false') // TODO: Understand what this means
             ->getResponse(new Response\GenericResponse());
     }
+
     /**
      * Add a finished broadcast to your post-live feed (saved replay).
      *
@@ -555,6 +589,7 @@ class Live extends RequestCollection
             ->addPost('_csrftoken', $this->ig->client->getToken())
             ->getResponse(new Response\GenericResponse());
     }
+
     /**
      * Delete a saved post-live broadcast.
      *

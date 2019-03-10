@@ -118,16 +118,16 @@ class Timeline extends RequestCollection
 
             // Pre-process media details and throw if not allowed on Instagram.
             switch ($item['type']) {
-            case 'photo':
-                // Determine the photo details.
-                $itemInternalMetadata->setPhotoDetails(Constants::FEED_TIMELINE_ALBUM, $item['file']);
-                break;
-            case 'video':
-                // Determine the video details.
-                $itemInternalMetadata->setVideoDetails(Constants::FEED_TIMELINE_ALBUM, $item['file']);
-                break;
-            default:
-                throw new \InvalidArgumentException(sprintf('Unsupported album media type "%s".', $item['type']));
+                case 'photo':
+                    // Determine the photo details.
+                    $itemInternalMetadata->setPhotoDetails(Constants::FEED_TIMELINE_ALBUM, $item['file']);
+                    break;
+                case 'video':
+                    // Determine the video details.
+                    $itemInternalMetadata->setVideoDetails(Constants::FEED_TIMELINE_ALBUM, $item['file']);
+                    break;
+                default:
+                    throw new \InvalidArgumentException(sprintf('Unsupported album media type "%s".', $item['type']));
             }
 
             $media[$key]['internalMetadata'] = $itemInternalMetadata;
@@ -139,15 +139,15 @@ class Timeline extends RequestCollection
             $itemInternalMetadata = $media[$key]['internalMetadata'];
 
             switch ($item['type']) {
-            case 'photo':
-                $this->ig->internal->uploadPhotoData(Constants::FEED_TIMELINE_ALBUM, $itemInternalMetadata);
-                break;
-            case 'video':
-                // Attempt to upload the video data.
-                $itemInternalMetadata = $this->ig->internal->uploadVideo(Constants::FEED_TIMELINE_ALBUM, $item['file'], $itemInternalMetadata);
+                case 'photo':
+                    $this->ig->internal->uploadPhotoData(Constants::FEED_TIMELINE_ALBUM, $itemInternalMetadata);
+                    break;
+                case 'video':
+                    // Attempt to upload the video data.
+                    $itemInternalMetadata = $this->ig->internal->uploadVideo(Constants::FEED_TIMELINE_ALBUM, $item['file'], $itemInternalMetadata);
 
-                // Attempt to upload the thumbnail, associated with our video's ID.
-                $this->ig->internal->uploadVideoThumbnail(Constants::FEED_TIMELINE_ALBUM, $itemInternalMetadata, ['thumbnail_timestamp' => (isset($media[$key]['thumbnail_timestamp'])) ? $media[$key]['thumbnail_timestamp'] : 0]);
+                    // Attempt to upload the thumbnail, associated with our video's ID.
+                    $this->ig->internal->uploadVideoThumbnail(Constants::FEED_TIMELINE_ALBUM, $itemInternalMetadata, ['thumbnail_timestamp' => (isset($media[$key]['thumbnail_timestamp'])) ? $media[$key]['thumbnail_timestamp'] : 0]);
             }
 
             $media[$key]['internalMetadata'] = $itemInternalMetadata;
@@ -183,8 +183,8 @@ class Timeline extends RequestCollection
      *
      * This is the feed of recent timeline posts from people you follow.
      *
-     * @param null|string $maxId   Next "maximum ID", used for pagination.
-     * @param null|array  $options An associative array with following keys (all
+     * @param string|null $maxId   Next "maximum ID", used for pagination.
+     * @param array|null  $options An associative array with following keys (all
      *                             of them are optional):
      *                             "latest_story_pk" The media ID in Instagram's
      *                             internal format (ie "3482384834_43294");
@@ -233,13 +233,13 @@ class Timeline extends RequestCollection
             ->addPost('timezone_offset', date('Z'))
             ->addPost('is_async_ads', (string) (int) $asyncAds)
             ->addPost('is_async_ads_double_request', (string) (int) ($asyncAds && $this->ig->isExperimentEnabled(
-                'ig_android_ad_async_ads_universe',
-                'is_double_request_enabled'
-            )))
+                    'ig_android_ad_async_ads_universe',
+                    'is_double_request_enabled'
+                )))
             ->addPost('is_async_ads_rti', (string) (int) ($asyncAds && $this->ig->isExperimentEnabled(
-                'ig_android_ad_async_ads_universe',
-                'is_rti_enabled'
-            )))
+                    'ig_android_ad_async_ads_universe',
+                    'is_rti_enabled'
+                )))
             ->addPost('rti_delivery_backend', (string) (int) $this->ig->getExperimentParam(
                 'ig_android_ad_async_ads_universe',
                 'rti_delivery_backend'
@@ -309,7 +309,7 @@ class Timeline extends RequestCollection
      * Get a user's timeline feed.
      *
      * @param string      $userId Numerical UserPK ID.
-     * @param null|string $maxId  Next "maximum ID", used for pagination.
+     * @param string|null $maxId  Next "maximum ID", used for pagination.
      *
      * @throws \InstagramAPI\Exception\InstagramException
      *
@@ -331,7 +331,7 @@ class Timeline extends RequestCollection
     /**
      * Get your own timeline feed.
      *
-     * @param null|string $maxId Next "maximum ID", used for pagination.
+     * @param string|null $maxId Next "maximum ID", used for pagination.
      *
      * @throws \InstagramAPI\Exception\InstagramException
      *
@@ -382,18 +382,18 @@ class Timeline extends RequestCollection
 
         $endpoint = $onlyMe ? 'only_me' : 'undo_only_me';
         switch ($mediaType) {
-        case 'PHOTO':
-            $mediaCode = 1;
-            break;
-        case 'VIDEO':
-            $mediaCode = 2;
-            break;
-        case 'ALBUM':
-            $mediaCode = 8;
-            break;
-        default:
-            throw new \InvalidArgumentException(sprintf('Unknown media type (%s).', $mediaType));
-            break;
+            case 'PHOTO':
+                $mediaCode = 1;
+                break;
+            case 'VIDEO':
+                $mediaCode = 2;
+                break;
+            case 'ALBUM':
+                $mediaCode = 8;
+                break;
+            default:
+                throw new \InvalidArgumentException(sprintf('Unknown media type (%s).', $mediaType));
+                break;
         }
 
         return $this->ig->request("media/{$mediaId}/{$endpoint}/")

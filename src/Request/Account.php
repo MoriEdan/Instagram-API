@@ -78,7 +78,7 @@ class Account extends RequestCollection
      * @param string      $biography   Biography text. Use "" for nothing.
      * @param string      $email       Email. Required!
      * @param int         $gender      Gender (1 = male, 2 = female, 3 = unknown). Required!
-     * @param null|string $newUsername (optional) Rename your account to a new username,
+     * @param string|null $newUsername (optional) Rename your account to a new username,
      *                                 which you've already verified with checkUsername().
      *
      * @throws \InstagramAPI\Exception\InstagramException
@@ -111,8 +111,8 @@ class Account extends RequestCollection
 
         // Determine the desired username value.
         $username = is_string($newUsername) && strlen($newUsername) > 0
-                  ? $newUsername
-                  : $oldUsername; // Keep current name.
+            ? $newUsername
+            : $oldUsername; // Keep current name.
 
         return $this->ig->request('accounts/edit_profile/')
             ->addPost('_uuid', $this->ig->uuid)

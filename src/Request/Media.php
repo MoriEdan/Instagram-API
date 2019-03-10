@@ -62,7 +62,7 @@ class Media extends RequestCollection
      *
      * @param string     $mediaId     The media ID in Instagram's internal format (ie "3482384834_43294").
      * @param string     $captionText Caption to use for the media.
-     * @param null|array $metadata    (optional) Associative array of optional metadata to edit:
+     * @param array|null $metadata    (optional) Associative array of optional metadata to edit:
      *                                "usertags" - special array with user tagging instructions,
      *                                if you want to modify the user tags;
      *                                "location" - a Location model object to set the media location,
@@ -197,7 +197,7 @@ class Media extends RequestCollection
     /**
      * Get feed of your liked media.
      *
-     * @param null|string $maxId Next "maximum ID", used for pagination.
+     * @param string|null $maxId Next "maximum ID", used for pagination.
      *
      * @throws \InstagramAPI\Exception\InstagramException
      *
@@ -621,7 +621,7 @@ class Media extends RequestCollection
     /**
      * Get saved media items feed.
      *
-     * @param null|string $maxId Next "maximum ID", used for pagination.
+     * @param string|null $maxId Next "maximum ID", used for pagination.
      *
      * @throws \InstagramAPI\Exception\InstagramException
      *
@@ -742,65 +742,65 @@ class Media extends RequestCollection
 
         // Now parse the necessary parameters for the selected module.
         switch ($module) {
-        case 'feed_contextual_post': // "Explore" tab.
-            if (isset($extraData['explore_source_token'])) {
-                // The explore media `Item::getExploreSourceToken()` value.
-                $request->addPost('explore_source_token', $extraData['explore_source_token']);
-            } else {
-                throw new \InvalidArgumentException(sprintf('Missing extra data for module "%s".', $module));
-            }
-            break;
-        case 'profile': // LIST VIEW (when posts are shown vertically by the app
-                        // one at a time (as in the Timeline tab)): Any media on
-                        // a user profile (their timeline) in list view mode.
-        case 'media_view_profile': // GRID VIEW (standard 3x3): Album (carousel)
-                                   // on a user profile (their timeline).
-        case 'video_view_profile': // GRID VIEW (standard 3x3): Video on a user
-                                   // profile (their timeline).
-        case 'photo_view_profile': // GRID VIEW (standard 3x3): Photo on a user
-                                   // profile (their timeline).
-            if (isset($extraData['username']) && isset($extraData['user_id'])) {
-                // Username and id of the media's owner (the profile owner).
-                $request->addPost('username', $extraData['username'])
-                    ->addPost('user_id', $extraData['user_id']);
-            } else {
-                throw new \InvalidArgumentException(sprintf('Missing extra data for module "%s".', $module));
-            }
-            break;
-        case 'feed_contextual_hashtag': // "Hashtag" search result.
-            if (isset($extraData['hashtag'])) {
-                // The hashtag where the app found this media.
-                Utils::throwIfInvalidHashtag($extraData['hashtag']);
-                $request->addPost('hashtag', $extraData['hashtag']);
-            } else {
-                throw new \InvalidArgumentException(sprintf('Missing extra data for module "%s".', $module));
-            }
-            break;
-        case 'feed_contextual_location': // "Location" search result.
-            if (isset($extraData['location_id'])) {
-                // The location ID of this media.
-                $request->addPost('location_id', $extraData['location_id']);
-            } else {
-                throw new \InvalidArgumentException(sprintf('Missing extra data for module "%s".', $module));
-            }
-            break;
-        case 'feed_timeline': // "Timeline" tab (the global Home-feed with all
-                              // kinds of mixed news).
-        case 'newsfeed': // "Followings Activity" feed tab. Used when
-                         // liking/unliking a post that we clicked on from a
-                         // single-activity "xyz liked abc's post" entry.
-        case 'feed_contextual_newsfeed_multi_media_liked':  // "Followings
-                                                            // Activity" feed
-                                                            // tab. Used when
-                                                            // liking/unliking a
-                                                            // post that we
-                                                            // clicked on from a
-                                                            // multi-activity
-                                                            // "xyz liked 5
-                                                            // posts" entry.
-            break;
-        default:
-            throw new \InvalidArgumentException(sprintf('Invalid module name. %s does not correspond to any of the valid module names.', $module));
+            case 'feed_contextual_post': // "Explore" tab.
+                if (isset($extraData['explore_source_token'])) {
+                    // The explore media `Item::getExploreSourceToken()` value.
+                    $request->addPost('explore_source_token', $extraData['explore_source_token']);
+                } else {
+                    throw new \InvalidArgumentException(sprintf('Missing extra data for module "%s".', $module));
+                }
+                break;
+            case 'profile': // LIST VIEW (when posts are shown vertically by the app
+                // one at a time (as in the Timeline tab)): Any media on
+                // a user profile (their timeline) in list view mode.
+            case 'media_view_profile': // GRID VIEW (standard 3x3): Album (carousel)
+                // on a user profile (their timeline).
+            case 'video_view_profile': // GRID VIEW (standard 3x3): Video on a user
+                // profile (their timeline).
+            case 'photo_view_profile': // GRID VIEW (standard 3x3): Photo on a user
+                // profile (their timeline).
+                if (isset($extraData['username']) && isset($extraData['user_id'])) {
+                    // Username and id of the media's owner (the profile owner).
+                    $request->addPost('username', $extraData['username'])
+                        ->addPost('user_id', $extraData['user_id']);
+                } else {
+                    throw new \InvalidArgumentException(sprintf('Missing extra data for module "%s".', $module));
+                }
+                break;
+            case 'feed_contextual_hashtag': // "Hashtag" search result.
+                if (isset($extraData['hashtag'])) {
+                    // The hashtag where the app found this media.
+                    Utils::throwIfInvalidHashtag($extraData['hashtag']);
+                    $request->addPost('hashtag', $extraData['hashtag']);
+                } else {
+                    throw new \InvalidArgumentException(sprintf('Missing extra data for module "%s".', $module));
+                }
+                break;
+            case 'feed_contextual_location': // "Location" search result.
+                if (isset($extraData['location_id'])) {
+                    // The location ID of this media.
+                    $request->addPost('location_id', $extraData['location_id']);
+                } else {
+                    throw new \InvalidArgumentException(sprintf('Missing extra data for module "%s".', $module));
+                }
+                break;
+            case 'feed_timeline': // "Timeline" tab (the global Home-feed with all
+                // kinds of mixed news).
+            case 'newsfeed': // "Followings Activity" feed tab. Used when
+                // liking/unliking a post that we clicked on from a
+                // single-activity "xyz liked abc's post" entry.
+            case 'feed_contextual_newsfeed_multi_media_liked':  // "Followings
+                // Activity" feed
+                // tab. Used when
+                // liking/unliking a
+                // post that we
+                // clicked on from a
+                // multi-activity
+                // "xyz liked 5
+                // posts" entry.
+                break;
+            default:
+                throw new \InvalidArgumentException(sprintf('Invalid module name. %s does not correspond to any of the valid module names.', $module));
         }
     }
 }

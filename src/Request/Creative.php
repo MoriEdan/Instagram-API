@@ -18,7 +18,7 @@ class Creative extends RequestCollection
      * apply them MANUALLY via some external image/video editor or library!
      *
      * @param string     $stickerType Type of sticker (currently only "static_stickers").
-     * @param null|array $location    (optional) Array containing lat, lng and horizontalAccuracy.
+     * @param array|null $location    (optional) Array containing lat, lng and horizontalAccuracy.
      *
      * @throws \InvalidArgumentException
      * @throws \InstagramAPI\Exception\InstagramException
@@ -33,8 +33,8 @@ class Creative extends RequestCollection
             throw new \InvalidArgumentException('You must provide a valid sticker type.');
         }
         if ($location !== null && (!isset($location['lat'])
-                                    || !isset($location['lng'])
-                                    || !isset($location['horizontalAccuracy']))) {
+                || !isset($location['lng'])
+                || !isset($location['horizontalAccuracy']))) {
             throw new \InvalidArgumentException('Your location array must contain keys for "lat", "lng" and "horizontalAccuracy".');
         }
 
