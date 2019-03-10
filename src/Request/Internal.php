@@ -181,15 +181,15 @@ class Internal extends RequestCollection
     {
         // Determine the target endpoint for the photo.
         switch ($targetFeed) {
-        case Constants::FEED_TIMELINE:
-            $endpoint = 'media/configure/';
-            break;
-        case Constants::FEED_DIRECT_STORY:
-        case Constants::FEED_STORY:
-            $endpoint = 'media/configure_to_story/';
-            break;
-        default:
-            throw new \InvalidArgumentException(sprintf('Bad target feed "%s".', $targetFeed));
+            case Constants::FEED_TIMELINE:
+                $endpoint = 'media/configure/';
+                break;
+            case Constants::FEED_DIRECT_STORY:
+            case Constants::FEED_STORY:
+                $endpoint = 'media/configure_to_story/';
+                break;
+            default:
+                throw new \InvalidArgumentException(sprintf('Bad target feed "%s".', $targetFeed));
         }
 
         // Available external metadata parameters:
@@ -328,7 +328,7 @@ class Internal extends RequestCollection
                     Utils::throwIfInvalidStorySlider($storySlider);
                     $request
                         ->addPost('story_sliders', json_encode($storySlider))
-                        ->addPost('story_sticker_ids', $storySlider[0]['emoji']);
+                        ->addPost('story_sticker_ids', 'emoji_slider_'.$storySlider[0]['emoji']);
                 }
                 if ($attachedMedia !== null) {
                     Utils::throwIfInvalidAttachedMedia($attachedMedia);
@@ -594,18 +594,18 @@ class Internal extends RequestCollection
     {
         // Determine the target endpoint for the video.
         switch ($targetFeed) {
-        case Constants::FEED_TIMELINE:
-            $endpoint = 'media/configure/';
-            break;
-        case Constants::FEED_DIRECT_STORY:
-        case Constants::FEED_STORY:
-            $endpoint = 'media/configure_to_story/';
-            break;
-        case Constants::FEED_TV:
-            $endpoint = 'media/configure_to_igtv/';
-            break;
-        default:
-            throw new \InvalidArgumentException(sprintf('Bad target feed "%s".', $targetFeed));
+            case Constants::FEED_TIMELINE:
+                $endpoint = 'media/configure/';
+                break;
+            case Constants::FEED_DIRECT_STORY:
+            case Constants::FEED_STORY:
+                $endpoint = 'media/configure_to_story/';
+                break;
+            case Constants::FEED_TV:
+                $endpoint = 'media/configure_to_igtv/';
+                break;
+            default:
+                throw new \InvalidArgumentException(sprintf('Bad target feed "%s".', $targetFeed));
         }
 
         // Available external metadata parameters:
@@ -630,6 +630,8 @@ class Internal extends RequestCollection
         $storyMentions = (isset($externalMetadata['story_mentions']) && $targetFeed == Constants::FEED_STORY) ? $externalMetadata['story_mentions'] : null;
         /** @var array Story poll to use for the media. ONLY STORY MEDIA! */
         $storyPoll = (isset($externalMetadata['story_polls']) && $targetFeed == Constants::FEED_STORY) ? $externalMetadata['story_polls'] : null;
+        /** @var array Attached media used to share media to story feed. ONLY STORY MEDIA! */
+        $storySlider = (isset($externalMetadata['story_sliders']) && $targetFeed == Constants::FEED_STORY) ? $externalMetadata['story_sliders'] : null;
         /** @var array Attached media used to share media to story feed. ONLY STORY MEDIA! */
         $attachedMedia = (isset($externalMetadata['attached_media']) && $targetFeed == Constants::FEED_STORY) ? $externalMetadata['attached_media'] : null;
         /** @var array Title of the media uploaded to your channel. ONLY TV MEDIA! */
@@ -715,6 +717,12 @@ class Internal extends RequestCollection
                         ->addPost('story_polls', json_encode($storyPoll))
                         ->addPost('internal_features', 'polling_sticker')
                         ->addPost('mas_opt_in', 'NOT_PROMPTED');
+                }
+                if ($storySlider !== null) {
+                    Utils::throwIfInvalidStorySlider($storySlider);
+                    $request
+                        ->addPost('story_sliders', json_encode($storySlider))
+                        ->addPost('story_sticker_ids', 'emoji_slider_'.$storySlider[0]['emoji']);
                 }
                 if ($attachedMedia !== null) {
                     Utils::throwIfInvalidAttachedMedia($attachedMedia);
@@ -825,64 +833,64 @@ class Internal extends RequestCollection
             $uploadId = $itemInternalMetadata->getUploadId();
 
             switch ($item['type']) {
-            case 'photo':
-                // Build this item's configuration.
-                $photoConfig = [
-                    'date_time_original'  => $date,
-                    'scene_type'          => 1,
-                    'disable_comments'    => false,
-                    'upload_id'           => $uploadId,
-                    'source_type'         => 0,
-                    'scene_capture_type'  => 'standard',
-                    'date_time_digitized' => $date,
-                    'geotag_enabled'      => false,
-                    'camera_position'     => 'back',
-                    'edits'               => [
-                        'filter_strength' => 1,
-                        'filter_name'     => 'IGNormalFilter',
-                    ],
-                ];
+                case 'photo':
+                    // Build this item's configuration.
+                    $photoConfig = [
+                        'date_time_original'  => $date,
+                        'scene_type'          => 1,
+                        'disable_comments'    => false,
+                        'upload_id'           => $uploadId,
+                        'source_type'         => 0,
+                        'scene_capture_type'  => 'standard',
+                        'date_time_digitized' => $date,
+                        'geotag_enabled'      => false,
+                        'camera_position'     => 'back',
+                        'edits'               => [
+                            'filter_strength' => 1,
+                            'filter_name'     => 'IGNormalFilter',
+                        ],
+                    ];
 
-                if (isset($item['usertags'])) {
-                    // NOTE: These usertags were validated in Timeline::uploadAlbum.
-                    $photoConfig['usertags'] = json_encode(['in' => $item['usertags']]);
-                }
+                    if (isset($item['usertags'])) {
+                        // NOTE: These usertags were validated in Timeline::uploadAlbum.
+                        $photoConfig['usertags'] = json_encode(['in' => $item['usertags']]);
+                    }
 
-                $childrenMetadata[] = $photoConfig;
-                break;
-            case 'video':
-                // Get all of the INTERNAL per-VIDEO metadata.
-                $videoDetails = $itemInternalMetadata->getVideoDetails();
+                    $childrenMetadata[] = $photoConfig;
+                    break;
+                case 'video':
+                    // Get all of the INTERNAL per-VIDEO metadata.
+                    $videoDetails = $itemInternalMetadata->getVideoDetails();
 
-                // Build this item's configuration.
-                $videoConfig = [
-                    'length'              => round($videoDetails->getDuration(), 1),
-                    'date_time_original'  => $date,
-                    'scene_type'          => 1,
-                    'poster_frame_index'  => 0,
-                    'trim_type'           => 0,
-                    'disable_comments'    => false,
-                    'upload_id'           => $uploadId,
-                    'source_type'         => 'library',
-                    'geotag_enabled'      => false,
-                    'edits'               => [
-                        'length'          => round($videoDetails->getDuration(), 1),
-                        'cinema'          => 'unsupported',
-                        'original_length' => round($videoDetails->getDuration(), 1),
-                        'source_type'     => 'library',
-                        'start_time'      => 0,
-                        'camera_position' => 'unknown',
-                        'trim_type'       => 0,
-                    ],
-                ];
+                    // Build this item's configuration.
+                    $videoConfig = [
+                        'length'              => round($videoDetails->getDuration(), 1),
+                        'date_time_original'  => $date,
+                        'scene_type'          => 1,
+                        'poster_frame_index'  => 0,
+                        'trim_type'           => 0,
+                        'disable_comments'    => false,
+                        'upload_id'           => $uploadId,
+                        'source_type'         => 'library',
+                        'geotag_enabled'      => false,
+                        'edits'               => [
+                            'length'          => round($videoDetails->getDuration(), 1),
+                            'cinema'          => 'unsupported',
+                            'original_length' => round($videoDetails->getDuration(), 1),
+                            'source_type'     => 'library',
+                            'start_time'      => 0,
+                            'camera_position' => 'unknown',
+                            'trim_type'       => 0,
+                        ],
+                    ];
 
-                if (isset($item['usertags'])) {
-                    // NOTE: These usertags were validated in Timeline::uploadAlbum.
-                    $videoConfig['usertags'] = json_encode(['in' => $item['usertags']]);
-                }
+                    if (isset($item['usertags'])) {
+                        // NOTE: These usertags were validated in Timeline::uploadAlbum.
+                        $videoConfig['usertags'] = json_encode(['in' => $item['usertags']]);
+                    }
 
-                $childrenMetadata[] = $videoConfig;
-                break;
+                    $childrenMetadata[] = $videoConfig;
+                    break;
             }
         }
 
@@ -1451,8 +1459,8 @@ class Internal extends RequestCollection
                             // We are reading a property that isn't defined in the class
                             // property map, so we must use "has" first, to ensure it exists.
                             ($result->hasErrorTitle() && is_string($result->getErrorTitle())
-                             ? $result->getErrorTitle()
-                             : 'unknown error')
+                                ? $result->getErrorTitle()
+                                : 'unknown error')
                         ));
                     } elseif ($result->isOk()) {
                         return $result;
