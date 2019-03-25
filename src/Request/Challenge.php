@@ -8,6 +8,7 @@
 
 namespace InstagramAPI\Request;
 
+use function Couchbase\defaultDecoder;
 use InstagramAPI\Response;
 
 class Challenge extends RequestCollection

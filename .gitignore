@@ -51,3 +51,4 @@ ac-php-tags/
 
 # test files for new update.
 examples/testNewUpdates.php
+examples/storage/

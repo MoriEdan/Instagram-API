@@ -565,6 +565,7 @@ class Instagram implements ExperimentsInterface
      */
     public function finishTwoFactorLogin(
         $username,
+        $pk,
         $password,
         $twoFactorIdentifier,
         $verificationCode,
@@ -572,8 +573,8 @@ class Instagram implements ExperimentsInterface
         $appRefreshInterval = 1800,
         $usernameHandler = null)
     {
-        if (empty($username) || empty($password)) {
-            throw new \InvalidArgumentException('You must provide a username and password to finishTwoFactorLogin().');
+        if (empty($username) || empty($pk) || empty($password)) {
+            throw new \InvalidArgumentException('You must provide a username, pk and password to finishTwoFactorLogin().');
         }
         if (empty($verificationCode) || empty($twoFactorIdentifier)) {
             throw new \InvalidArgumentException('You must provide a verification code and two-factor identifier to finishTwoFactorLogin().');
@@ -589,7 +590,7 @@ class Instagram implements ExperimentsInterface
         // on their second page load without having to begin any new `login()`
         // call (since they did that in their previous webpage's library calls).
         if ($this->username !== $username || $this->password !== $password) {
-            $this->_setUser($username, $password);
+            $this->_setUser($username,$pk, $password);
         }
 
         $username = ($usernameHandler !== null) ? $usernameHandler : $username;
@@ -626,6 +627,7 @@ class Instagram implements ExperimentsInterface
      * NOTE: Instagram can only send you a new code every 60 seconds.
      *
      * @param string $username            Your Instagram username.
+     * @param string $pk                  Your Instagram pk.
      * @param string $password            Your Instagram password.
      * @param string $twoFactorIdentifier Two factor identifier, obtained in
      *                                    `login()` response.
@@ -636,10 +638,11 @@ class Instagram implements ExperimentsInterface
      */
     public function sendTwoFactorLoginSMS(
         $username,
+        $pk,
         $password,
         $twoFactorIdentifier)
     {
-        if (empty($username) || empty($password)) {
+        if (empty($username) || empty($pk) || empty($password)) {
             throw new \InvalidArgumentException('You must provide a username and password to sendTwoFactorLoginSMS().');
         }
         if (empty($twoFactorIdentifier)) {
@@ -653,7 +656,7 @@ class Instagram implements ExperimentsInterface
         // on their second page load without having to begin any new `login()`
         // call (since they did that in their previous webpage's library calls).
         if ($this->username !== $username || $this->password !== $password) {
-            $this->_setUser($username, $password);
+            $this->_setUser($username,$pk, $password);
         }
 
         return $this->request('accounts/send_two_factor_login_sms/')
@@ -909,7 +912,7 @@ class Instagram implements ExperimentsInterface
         // NOTE: If the user tries to look up themselves WHILE they are logged
         // in, we'll correctly NOT call `_setUser()` since they're already set.
         if ($this->username !== $username) {
-            $this->_setUser($username, 'NOPASSWORD');
+            $this->_setUser($username, 'NOPOK','NOPASSWORD');
         }
     }
 
