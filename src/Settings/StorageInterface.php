@@ -77,14 +77,14 @@ interface StorageInterface
      * are NOT essential since they can be re-generated. So the data storage
      * implementation MUST ONLY check for the existence of the USERSETTINGS.
      *
-     * @param string $username The Instagram username.
+     * @param string $pk The Instagram pk.
      *
      * @throws \InstagramAPI\Exception\SettingsException
      *
      * @return bool TRUE if user exists, otherwise FALSE.
      */
     public function hasUser(
-        $username);
+        $pk);
 
     /**
      * Move the internal data for a username to a new username.
@@ -97,14 +97,14 @@ interface StorageInterface
      * if either of those checks fail. This is to ensure that users don't lose
      * data by accidentally overwriting something.
      *
-     * @param string $oldUsername The old name that settings are stored as.
-     * @param string $newUsername The new name to move the settings to.
+     * @param string $oldPk The old pk that settings are stored as.
+     * @param string $newPk The new pk to move the settings to.
      *
      * @throws \InstagramAPI\Exception\SettingsException
      */
     public function moveUser(
-        $oldUsername,
-        $newUsername);
+        $oldPk,
+        $newPk);
 
     /**
      * Delete all internal data for a given username.
@@ -115,12 +115,12 @@ interface StorageInterface
      * This function MUST treat a non-existent or already deleted user as
      * "success". ONLY throw an exception if ACTUAL deletion fails.
      *
-     * @param string $username The Instagram username.
+     * @param string $pk The Instagram username.
      *
      * @throws \InstagramAPI\Exception\SettingsException
      */
     public function deleteUser(
-        $username);
+        $pk);
 
     /**
      * Open the data storage for a specific user.
@@ -140,11 +140,12 @@ interface StorageInterface
      * class has cached the user reference we gave you in this call.
      *
      * @param string $username The Instagram username.
+     * @param string $pk The Instagram username.
      *
      * @throws \InstagramAPI\Exception\SettingsException
      */
     public function openUser(
-        $username);
+        $username, $pk);
 
     /**
      * Load all settings for the currently active user.

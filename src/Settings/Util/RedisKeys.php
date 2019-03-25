@@ -15,14 +15,6 @@ class RedisKeys
     /**
      *
      */
-    const SEARCH_USERNAME_KEY = "%s:username:%s";
-
-
-    /**
-     *
-     */
     const SEARCH_PK_KEY = "%s:pk:%s";
-
-
 
 }

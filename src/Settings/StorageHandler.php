@@ -113,6 +113,9 @@ class StorageHandler
     /** @var string Current Instagram username that all settings belong to. */
     private $_username;
 
+    /** @var string Current Instagram pk that all settings blong to */
+    private $_pk;
+
     /** @var array Cache for the current user's key-value settings pairs. */
     private $_userSettings;
 
@@ -161,10 +164,11 @@ class StorageHandler
     public function __destruct()
     {
         // The storage handler is being killed, so tell the location to close.
-        if ($this->_username !== null) {
+        if ($this->_pk !== null) {
             $this->_triggerCallback('onCloseUser');
             $this->_storage->closeUser();
             $this->_username = null;
+            $this->pk = null;
         }
         $this->_storage->closeLocation();
     }
@@ -172,29 +176,29 @@ class StorageHandler
     /**
      * Whether the storage backend contains a specific user.
      *
-     * @param string $username The Instagram username.
+     * @param string $pk The Instagram pk.
      *
      * @throws \InstagramAPI\Exception\SettingsException
      *
      * @return bool TRUE if user exists, otherwise FALSE.
      */
     public function hasUser(
-        $username)
+        $pk)
     {
-        $this->_throwIfEmptyValue($username);
+        $this->_throwIfEmptyValue($pk);
 
-        return $this->_storage->hasUser($username);
+        return $this->_storage->hasUser($pk);
     }
 
     /**
-     * Move the internal data for a username to a new username.
+     * Move the internal data for a pk to a new pk.
      *
      * This function is important because of the fact that all per-user settings
      * in all Storage implementations are retrieved and stored via its Instagram
-     * username, since their NAME is literally the ONLY thing we know about a
+     * pk, since their NAME is literally the ONLY thing we know about a
      * user before we have loaded their settings or logged in! So if you later
      * rename that Instagram account, it means that your old device settings
-     * WON'T follow along automatically, since the new login username is seen
+     * WON'T follow along automatically, since the new login pk is seen
      * as a brand new user that isn't in the settings storage.
      *
      * This function conveniently tells your chosen Storage backend to move a
@@ -204,59 +208,61 @@ class StorageHandler
      * Bonus guide for easily confused people: YOU must manually rename your
      * user on Instagram.com before you call this function. We don't do that.
      *
-     * @param string $oldUsername The old name that settings are stored as.
-     * @param string $newUsername The new name to move the settings to.
+     * @param string $oldPk The old pk that settings are stored as.
+     * @param string $newPk The new pk to move the settings to.
      *
      * @throws \InstagramAPI\Exception\SettingsException
      */
     public function moveUser(
-        $oldUsername,
-        $newUsername)
+        $oldPk,
+        $newPk)
     {
-        $this->_throwIfEmptyValue($oldUsername);
-        $this->_throwIfEmptyValue($newUsername);
+        $this->_throwIfEmptyValue($oldPk);
+        $this->_throwIfEmptyValue($newPk);
 
-        if ($oldUsername === $this->_username
-            || $newUsername === $this->_username) {
+        if ($oldPk === $this->_pk
+            || $newPk === $this->_pk) {
             throw new SettingsException(
                 'Attempted to move settings to/from the currently active user.'
             );
         }
 
-        $this->_storage->moveUser($oldUsername, $newUsername);
+        $this->_storage->moveUser($oldPk, $newPk);
     }
 
     /**
-     * Delete all internal data for a given username.
+     * Delete all internal data for a given pk.
      *
-     * @param string $username The Instagram username.
+     * @param string $pk The Instagram unique key.
      *
      * @throws \InstagramAPI\Exception\SettingsException
      */
     public function deleteUser(
-        $username)
+        $pk)
     {
-        $this->_throwIfEmptyValue($username);
+        $this->_throwIfEmptyValue($pk);
 
-        if ($username === $this->_username) {
+        if ($pk === $this->_pk) {
             throw new SettingsException(
                 'Attempted to delete the currently active user.'
             );
         }
 
-        $this->_storage->deleteUser($username);
+        $this->_storage->deleteUser($pk);
     }
 
     /**
      * Load all settings for a user from the storage and mark as current user.
      *
      * @param string $username The Instagram username.
+     * @param string $pk The Instagram unique key.
      *
      * @throws \InstagramAPI\Exception\SettingsException
      */
     public function setActiveUser(
-        $username)
+        $username, $pk)
     {
+        $this->_throwIfEmptyValue($pk);
         $this->_throwIfEmptyValue($username);
 
         // If that user is already loaded, there's no need to do anything.
@@ -264,17 +270,23 @@ class StorageHandler
             return;
         }
 
+        // If that user is already loaded, there's no need to do anything.
+        if ($pk === $this->_pk) {
+            return;
+        }
+
         // If we're switching away from a user, tell the backend to close the
         // current user's storage (if it needs to do any special processing).
-        if ($this->_username !== null) {
+        if ($this->_pk !== null || $this->_username !== null) {
             $this->_triggerCallback('onCloseUser');
             $this->_storage->closeUser();
         }
 
         // Set the new user as the current user for this storage instance.
         $this->_username = $username;
+        $this->_pk = $pk;
         $this->_userSettings = [];
-        $this->_storage->openUser($username);
+        $this->_storage->openUser($username, $pk);
 
         // Retrieve any existing settings for the user from the backend.
         $loadedSettings = $this->_storage->loadUserSettings();
@@ -589,7 +601,7 @@ class StorageHandler
      */
     protected function _throwIfNoActiveUser()
     {
-        if ($this->_username === null) {
+        if ($this->_pk === null) {
             throw new SettingsException(
                 'Called user-related function before setting the current storage user.'
             );

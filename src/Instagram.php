@@ -420,6 +420,10 @@ class Instagram implements ExperimentsInterface
      *                                   You can also use your email or phone,
      *                                   but take in mind that they won't work
      *                                   when you have two factor auth enabled.
+     *
+     * @param string $pk                 Instagram pk, it is unique identifier
+     *                                   for each instagram account
+     *
      * @param string $password           Your Instagram password.
      * @param int    $appRefreshInterval How frequently `login()` should act
      *                                   like an Instagram app that's been
@@ -446,6 +450,7 @@ class Instagram implements ExperimentsInterface
      */
     public function login(
         $username,
+        $pk,
         $password,
         $appRefreshInterval = 1800)
     {
@@ -453,13 +458,14 @@ class Instagram implements ExperimentsInterface
             throw new \InvalidArgumentException('You must provide a username and password to login().');
         }
 
-        return $this->_login($username, $password, false, $appRefreshInterval);
+        return $this->_login($username, $pk, $password, false, $appRefreshInterval);
     }
 
     /**
      * Internal login handler.
      *
      * @param string $username
+     * @param string $pk
      * @param string $password
      * @param bool   $forceLogin         Force login to Instagram instead of
      *                                   resuming previous session. Used
@@ -477,6 +483,7 @@ class Instagram implements ExperimentsInterface
      */
     protected function _login(
         $username,
+        $pk,
         $password,
         $forceLogin = false,
         $appRefreshInterval = 1800)
@@ -487,7 +494,7 @@ class Instagram implements ExperimentsInterface
 
         // Switch the currently active user/pass if the details are different.
         if ($this->username !== $username || $this->password !== $password) {
-            $this->_setUser($username, $password);
+            $this->_setUser($username,$pk, $password);
         }
 
         // Perform a full relogin if necessary.
@@ -762,6 +769,7 @@ class Instagram implements ExperimentsInterface
      * We can call this multiple times to switch between multiple accounts.
      *
      * @param string $username Your Instagram username.
+     * @param string $pk Your instagram key
      * @param string $password Your Instagram password.
      *
      * @throws \InvalidArgumentException
@@ -769,14 +777,15 @@ class Instagram implements ExperimentsInterface
      */
     public function _setUser(
         $username,
+        $pk,
         $password)
     {
-        if (empty($username) || empty($password)) {
+        if (empty($username) || empty($pk) || empty($password)) {
             throw new \InvalidArgumentException('You must provide a username and password to _setUser().');
         }
 
         // Load all settings from the storage and mark as current user.
-        $this->settings->setActiveUser($username);
+        $this->settings->setActiveUser($username, $pk);
 
         // Generate the user's device instance, which will be created from the
         // user's last-used device IF they've got a valid, good one stored.
