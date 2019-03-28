@@ -24,5 +24,6 @@ class StepData extends AutoPropertyMapper
         'phone_number_preview' => 'string',
         'contact_point'        => 'string',
         'form_type'            => 'string',
+        'phone_number_formatted' => 'string',
     ];
 }
