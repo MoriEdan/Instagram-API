@@ -528,8 +528,10 @@ class Instagram implements ExperimentsInterface
                     echo json_encode([
                         'status' => 'fail',
                         'type' => 'TwoFactorException',
-                        'message' => $e->getMessage(),
-                        'payload' => $e->getResponse()->getTwoFactorInfo()->getTwoFactorIdentifier()
+                        'message' => 'User needs to verify two factor',
+                        'payload' => [
+                            'two_factor_identifier' => $e->getResponse()->getTwoFactorInfo()->getTwoFactorIdentifier()
+                        ]
                     ]).PHP_EOL;
                     return $e->getResponse();
                 } else {
