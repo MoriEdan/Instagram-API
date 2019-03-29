@@ -2,6 +2,12 @@
 
 namespace InstagramAPI;
 
+use InstagramAPI\Exception\AccountDisabledException;
+use InstagramAPI\Exception\ChallengeRequiredException;
+use InstagramAPI\Exception\IncorrectPasswordException;
+use InstagramAPI\Exception\InstagramException;
+use InstagramAPI\Exception\TwoFactorException;
+
 /**
  * Instagram's Private API v5.
  *
@@ -477,7 +483,7 @@ class Instagram implements ExperimentsInterface
      * @throws \InvalidArgumentException
      * @throws \InstagramAPI\Exception\InstagramException
      *
-     * @return \InstagramAPI\Response\LoginResponse|null
+     * @return \InstagramAPI\Response\LoginResponse|null|string
      *
      * @see Instagram::login() The public login handler with a full description.
      */
@@ -513,16 +519,44 @@ class Instagram implements ExperimentsInterface
                     ->addPost('password', $this->password)
                     ->addPost('login_attempt_count', 0)
                     ->getResponse(new Response\LoginResponse());
+
             } catch (\InstagramAPI\Exception\InstagramException $e) {
                 if ($e->hasResponse() && $e->getResponse()->isTwoFactorRequired()) {
                     // Login failed because two-factor login is required.
                     // Return server response to tell user they need 2-factor.
+
+                    echo json_encode([
+                        'status' => 'fail',
+                        'type' => 'TwoFactorException',
+                        'message' => $e->getMessage(),
+                        'payload' => $e->getResponse()->getTwoFactorInfo()->getTwoFactorIdentifier()
+                    ]).PHP_EOL;
                     return $e->getResponse();
                 } else {
+                    $class = get_class($e);
+
+                    $reflection = new \ReflectionClass($class);
+
+                    $data = [
+                        'status' => 'fail',
+                        'type' => $reflection->getShortName(),
+                        'message' => $e->getMessage()
+                    ];
+
+                    if ($e instanceof ChallengeRequiredException) {
+                        $data['challenge'] = $e->getResponse()->getChallenge();
+                    }
+
+                    echo json_encode($data).PHP_EOL;
                     // Login failed for some other reason... Re-throw error.
                     throw $e;
                 }
             }
+
+            echo json_encode([
+                'status' => 'ok',
+                'type' => 'account_logged_in'
+            ]).PHP_EOL;
 
             $this->_updateLoginState($response);
 
@@ -531,6 +565,12 @@ class Instagram implements ExperimentsInterface
             // Full (re-)login successfully completed. Return server response.
             return $response;
         }
+
+
+        echo json_encode([
+            'status' => 'ok',
+            'type' => 'account_valid'
+        ]).PHP_EOL;
 
         // Attempt to resume an existing session, or full re-login if necessary.
         // NOTE: The "return" here gives a LoginResponse in case of re-login.
@@ -598,17 +638,39 @@ class Instagram implements ExperimentsInterface
         // Remove all whitespace from the verification code.
         $verificationCode = preg_replace('/\s+/', '', $verificationCode);
 
-        $response = $this->request('accounts/two_factor_login/')
-            ->setNeedsAuth(false)
-            // 1 - SMS, 2 - Backup codes, 3 - TOTP, 0 - ??
-            ->addPost('verification_method', $verificationMethod)
-            ->addPost('verification_code', $verificationCode)
-            ->addPost('two_factor_identifier', $twoFactorIdentifier)
-            ->addPost('_csrftoken', $this->client->getToken())
-            ->addPost('username', $this->username)
-            ->addPost('device_id', $this->device_id)
-            ->addPost('guid', $this->uuid)
-            ->getResponse(new Response\LoginResponse());
+        try {
+            $response = $this->request('accounts/two_factor_login/')
+                ->setNeedsAuth(false)
+                // 1 - SMS, 2 - Backup codes, 3 - TOTP, 0 - ??
+                ->addPost('verification_method', $verificationMethod)
+                ->addPost('verification_code', $verificationCode)
+                ->addPost('two_factor_identifier', $twoFactorIdentifier)
+                ->addPost('_csrftoken', $this->client->getToken())
+                ->addPost('username', $this->username)
+                ->addPost('device_id', $this->device_id)
+                ->addPost('guid', $this->uuid)
+                ->getResponse(new Response\LoginResponse());
+        }catch (InstagramException $e) {
+
+            $class = get_class($e);
+
+            $reflection = new \ReflectionClass($class);
+
+            $data = [
+                'status' => 'fail',
+                'type' => $reflection->getShortName(),
+                'message' => $e->getMessage()
+            ];
+
+            echo json_encode($data).PHP_EOL;
+
+            throw $e;
+        }
+
+        echo json_encode([
+            'status' => 'ok',
+            'type' => 'account_logged_in'
+        ]).PHP_EOL;
 
         $this->_updateLoginState($response);
 

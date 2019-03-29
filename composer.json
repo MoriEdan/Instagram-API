@@ -58,7 +58,8 @@
         "valga/fbns-react": "^0.1.8",
         "symfony/process": "^3.4|^4.0",
         "winbox/args": "1.0.0",
-        "predis/predis": "^1.1"
+        "predis/predis": "^1.1",
+        "ext-json" : "*"
     },
     "suggest": {
         "ext-event": "Installing PHP's native Event extension enables faster Realtime class event handling."

@@ -9,6 +9,7 @@
 namespace InstagramAPI\Request;
 
 use function Couchbase\defaultDecoder;
+use InstagramAPI\Exception\InstagramException;
 use InstagramAPI\Response;
 
 class Challenge extends RequestCollection
@@ -43,15 +44,48 @@ class Challenge extends RequestCollection
         $pk = $this->ig->settings->get('pk');
         $nonce = $this->ig->settings->get('nonce');
 
-        $response = $this->ig->request("challenge/$pk/$nonce/")
-            ->setNeedsAuth(false)
-            ->addPost('security_code', $securityCode)
-            ->addPost('device_id', $this->ig->uuid)
-            ->getResponse(new Response\LoginResponse());
+        try {
+            $response = $this->ig->request("challenge/$pk/$nonce/")
+                ->setNeedsAuth(false)
+                ->addPost('security_code', $securityCode)
+                ->addPost('device_id', $this->ig->uuid)
+                ->getResponse(new Response\LoginResponse());
+        }catch (InstagramException $e) {
+
+            $class = get_class($e);
+
+            $reflection = new \ReflectionClass($class);
+
+            $data = [
+                'status' => 'fail',
+                'type' => $reflection->getShortName(),
+                'message' => $e->getMessage()
+            ];
+
+            echo json_encode($data).PHP_EOL;
+
+            throw $e;
+
+        }
 
         if (!$response->getLoggedInUser()) {
+
+            $data = [
+                'status' => 'fail',
+                'exception_type' => 'TwoFactorException',
+                'message' => $response->getMessage()
+            ];
+
+            echo json_encode($data).PHP_EOL;
+
             throw new \InstagramAPI\Exception\TwoFactorException('2FA Fuck');
         }
+
+
+        echo json_encode([
+            'status' => 'ok',
+            'type' => 'account_logged_in'
+        ]).PHP_EOL;
 
         $this->ig->_updateLoginState($response);
         $this->ig->_sendLoginFlow(true, $appRefreshInterval);
