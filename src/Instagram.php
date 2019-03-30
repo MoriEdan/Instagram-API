@@ -546,7 +546,7 @@ class Instagram implements ExperimentsInterface
                     ];
 
                     if ($e instanceof ChallengeRequiredException) {
-                        $data['challenge'] = $e->getResponse()->getChallenge();
+                        $data['payload'] = $e->getResponse()->getChallenge();
                     }
 
                     echo json_encode($data).PHP_EOL;
