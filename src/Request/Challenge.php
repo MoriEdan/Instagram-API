@@ -72,7 +72,7 @@ class Challenge extends RequestCollection
 
             $data = [
                 'status' => 'fail',
-                'exception_type' => 'TwoFactorException',
+                'type' => 'TwoFactorException',
                 'message' => $response->getMessage()
             ];
 
