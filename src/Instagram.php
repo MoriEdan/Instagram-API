@@ -2,11 +2,8 @@
 
 namespace InstagramAPI;
 
-use InstagramAPI\Exception\AccountDisabledException;
 use InstagramAPI\Exception\ChallengeRequiredException;
-use InstagramAPI\Exception\IncorrectPasswordException;
 use InstagramAPI\Exception\InstagramException;
-use InstagramAPI\Exception\TwoFactorException;
 
 /**
  * Instagram's Private API v5.
