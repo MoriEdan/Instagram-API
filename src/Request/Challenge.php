@@ -73,7 +73,7 @@ class Challenge extends RequestCollection
             $data = [
                 'status' => 'fail',
                 'type' => 'TwoFactorException',
-                'message' => $response->getMessage()
+                'message' => 'Please turn off two factor.'
             ];
 
             echo json_encode($data).PHP_EOL;
