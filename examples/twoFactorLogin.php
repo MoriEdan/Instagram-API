@@ -17,7 +17,7 @@ require __DIR__.'/storage/util/RedisKeys.php';
 $username = '';
 $password = '';
 $pk = '';
-$debug = true;
+$debug = false;
 $redisUrl = 'redis://localhost:6379';
 $truncatedDebug = false;
 //////////////////////
@@ -32,6 +32,7 @@ $ig = new \InstagramAPI\Instagram($debug, $truncatedDebug,[
 try {
     $loginResponse = $ig->login($username,$pk, $password);
 
+
     if ($loginResponse !== null && $loginResponse->isTwoFactorRequired()) {
         $twoFactorIdentifier = $loginResponse->getTwoFactorInfo()->getTwoFactorIdentifier();
 
@@ -39,7 +40,7 @@ try {
         // You should replace this line with the logic you want.
         // The verification code will be sent by Instagram via SMS.
         $verificationCode = trim(fgets(STDIN));
-        $ig->finishTwoFactorLogin($username, $pk, $password, $twoFactorIdentifier, $verificationCode);
+        $ig->finishTwoFactorLogin($username, $pk, $password, $twoFactorIdentifier, $verificationCode, '3');
     }
 
     echo 'User: '.$ig->userLookup('miljan_rakita')->getUser();

@@ -15,15 +15,6 @@ require __DIR__.'/storage/util/RedisKeys.php';
 
 /////// CONFIG ///////
 
-/*
-$username = 'xsaritahdi';
-$password = 'vanzemunci98';
-$pk = '6808219125';
-
-$username = 'miljan_rakita';
-$password = 'l25M16j17M27j23d23';
-$pk = '2128436070';
-*/
 
 $debug = false;
 $redisUrl = 'redis://localhost:6379';
