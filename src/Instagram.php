@@ -527,7 +527,7 @@ class Instagram implements ExperimentsInterface
                         'type' => 'TwoFactorException',
                         'message' => 'User needs to verify two factor',
                         'payload' => [
-                            'two_factor_identifier' => $e->getResponse()->getTwoFactorInfo()->getTwoFactorIdentifier()
+                            'two_factor_identifier' => $e->getResponse()->getTwoFactorInfo()
                         ]
                     ]).PHP_EOL;
                     return $e->getResponse();
