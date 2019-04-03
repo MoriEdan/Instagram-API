@@ -455,13 +455,23 @@ class Instagram implements ExperimentsInterface
         $username,
         $pk,
         $password,
+        $skip = false,
         $appRefreshInterval = 1800)
     {
         if (empty($username) || empty($password)) {
             throw new \InvalidArgumentException('You must provide a username and password to login().');
         }
 
-        return $this->_login($username, $pk, $password, false, $appRefreshInterval);
+        if ($skip) {
+            $this->isMaybeLoggedIn = true;
+            $this->account_id = $pk;
+            $this->settings->set('account_id', $this->account_id);
+            $this->settings->set('last_login', time());
+
+            return '{"status":"ok"}';
+        } else {
+            return $this->_login($username, $pk, $password, false, $appRefreshInterval);
+        }
     }
 
     /**
