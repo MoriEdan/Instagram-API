@@ -15,13 +15,13 @@ require __DIR__.'/storage/util/RedisKeys.php';
 
 /////// CONFIG ///////
 $username = '';
-$password = '';
 $pk = '';
-$debug = true;
+$password = '';
+$debug = false;
 $redisUrl = 'redis://localhost:6379';
-$proxy = '';
+$proxy = 'http://46.219.14.37:30686';
 $truncatedDebug = false;
-//////////////////////
+/////////////////////
 
 $ig = new \InstagramAPI\Instagram($debug, $truncatedDebug,[
     'storage' => 'custom',

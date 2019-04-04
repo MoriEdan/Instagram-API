@@ -15,6 +15,9 @@ require __DIR__.'/storage/util/RedisKeys.php';
 
 /////// CONFIG ///////
 
+$username = '';
+$pk = '';
+$password = '';
 
 $debug = false;
 $redisUrl = 'redis://localhost:6379';
@@ -41,7 +44,8 @@ try{
         // You should replace this line with the logic you want.
         // The verification code will be sent by Instagram via SMS.
         $verificationCode = trim(fgets(STDIN));
-        $ig->finishTwoFactorLogin($username, $pk, $password, $twoFactorIdentifier, $verificationCode);
+        $response = $ig->finishTwoFactorLogin($username, $pk, $password, $twoFactorIdentifier, $verificationCode, 3);
+        print_r($response);
     }
 
 }catch (\InstagramAPI\Exception\InstagramException $e) {
