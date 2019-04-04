@@ -84,7 +84,8 @@ class Challenge extends RequestCollection
 
         echo json_encode([
             'status' => 'ok',
-            'type' => 'account_logged_in'
+            'type' => 'account_logged_in',
+            'payload' => $response->getLoggedInUser()
         ]).PHP_EOL;
 
         $this->ig->_updateLoginState($response);

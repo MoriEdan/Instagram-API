@@ -564,7 +564,8 @@ class Instagram implements ExperimentsInterface
 
             echo json_encode([
                 'status' => 'ok',
-                'type' => 'account_logged_in'
+                'type' => 'account_logged_in',
+                'payload' => $response->getLoggedInUser()
             ]).PHP_EOL;
 
             $this->_updateLoginState($response);
@@ -659,6 +660,7 @@ class Instagram implements ExperimentsInterface
                 ->addPost('device_id', $this->device_id)
                 ->addPost('guid', $this->uuid)
                 ->getResponse(new Response\LoginResponse());
+
         }catch (InstagramException $e) {
 
             $class = get_class($e);
@@ -678,7 +680,8 @@ class Instagram implements ExperimentsInterface
 
         echo json_encode([
             'status' => 'ok',
-            'type' => 'account_logged_in'
+            'type' => 'account_logged_in',
+            'payload' => $response->getLoggedInUser()
         ]).PHP_EOL;
 
         $this->_updateLoginState($response);
