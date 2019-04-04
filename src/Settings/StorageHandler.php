@@ -48,6 +48,7 @@ class StorageHandler
         'pk', // Users pk for challenge checkpoint verification.
         'datacenter', // Preferred data center (region-based).
         'presence_disabled', // Whether the presence feature has been disabled by user.
+        'is_business' // tells us if account is bussines
     ];
 
     /**

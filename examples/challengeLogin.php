@@ -14,9 +14,9 @@ require __DIR__.'/storage/RedisStorage.php';
 require __DIR__.'/storage/util/RedisKeys.php';
 
 /////// CONFIG ///////
-$username = '';
-$pk = '';
-$password = '';
+$username = 'miljan_rakita';
+$pk = '2128436070';
+$password = 'l25M16j17M27j23d23';
 $debug = false;
 $redisUrl = 'redis://localhost:6379';
 $proxy = 'http://46.219.14.37:30686';
