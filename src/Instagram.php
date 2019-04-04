@@ -568,6 +568,8 @@ class Instagram implements ExperimentsInterface
                 'payload' => $response->getLoggedInUser()
             ]).PHP_EOL;
 
+            $this->settings->set('is_business', $response->getLoggedInUser()->isIsBusiness());
+
             $this->_updateLoginState($response);
 
             $this->_sendLoginFlow(true, $appRefreshInterval);
@@ -579,7 +581,10 @@ class Instagram implements ExperimentsInterface
 
         echo json_encode([
             'status' => 'ok',
-            'type' => 'account_valid'
+            'type' => 'account_valid',
+            'payload' => [
+                'is_business' => $this->settings->get('is_business')
+            ]
         ]).PHP_EOL;
 
         // Attempt to resume an existing session, or full re-login if necessary.
@@ -683,6 +688,8 @@ class Instagram implements ExperimentsInterface
             'type' => 'account_logged_in',
             'payload' => $response->getLoggedInUser()
         ]).PHP_EOL;
+
+        $this->settings->set('is_business', $response->getLoggedInUser()->isIsBusiness());
 
         $this->_updateLoginState($response);
 
