@@ -88,7 +88,7 @@ class Challenge extends RequestCollection
             'payload' => $response->getLoggedInUser()
         ]).PHP_EOL;
 
-        $this->settings->set('is_business', $response->getLoggedInUser()->isIsBusiness());
+        $this->ig->settings->set('is_business', $response->getLoggedInUser()->isIsBusiness());
 
         $this->ig->_updateLoginState($response);
         $this->ig->_sendLoginFlow(true, $appRefreshInterval);
