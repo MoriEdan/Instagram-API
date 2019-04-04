@@ -32,6 +32,8 @@ $ig = new \InstagramAPI\Instagram($debug, $truncatedDebug,[
 try {
     $loginResponse = $ig->login($username,$pk, $password);
 
+    $loginResponse->getLoggedInUser()->getIsBusiness();
+
     if ($loginResponse !== null && $loginResponse->isTwoFactorRequired()) {
         $twoFactorIdentifier = $loginResponse->getTwoFactorInfo()->getTwoFactorIdentifier();
 

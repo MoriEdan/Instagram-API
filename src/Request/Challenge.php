@@ -81,14 +81,25 @@ class Challenge extends RequestCollection
             throw new \InstagramAPI\Exception\TwoFactorException('2FA Fuck');
         }
 
-
-        echo json_encode([
+        // DISASTER
+        $data = [
             'status' => 'ok',
             'type' => 'account_logged_in',
             'payload' => $response->getLoggedInUser()
-        ]).PHP_EOL;
+        ];
 
-        $this->ig->settings->set('is_business', $response->getLoggedInUser()->isIsBusiness());
+        echo json_encode($data).PHP_EOL;
+
+        $result = json_decode(json_encode($data), true);
+
+        $bussines = 'false';
+
+        if (isset($result['payload']['is_business']) && $result['payload']['is_business']) {
+            $bussines = 'true';
+        }
+
+        $this->ig->settings->set('is_business', $bussines);
+        // DISASTER
 
         $this->ig->_updateLoginState($response);
         $this->ig->_sendLoginFlow(true, $appRefreshInterval);

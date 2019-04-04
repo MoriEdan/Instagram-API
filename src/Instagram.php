@@ -562,13 +562,26 @@ class Instagram implements ExperimentsInterface
                 }
             }
 
-            echo json_encode([
+            // DISASTER
+            $data = [
                 'status' => 'ok',
                 'type' => 'account_logged_in',
                 'payload' => $response->getLoggedInUser()
-            ]).PHP_EOL;
+            ];
 
-            $this->settings->set('is_business', $response->getLoggedInUser()->isIsBusiness());
+            echo json_encode($data).PHP_EOL;
+
+            $result = json_decode(json_encode($data), true);
+
+            $bussines = 'false';
+
+            if (isset($result['payload']['is_business']) && $result['payload']['is_business']) {
+                $bussines = 'true';
+            }
+
+            $this->settings->set('is_business', $bussines);
+
+            // DISASTER
 
             $this->_updateLoginState($response);
 
@@ -683,13 +696,26 @@ class Instagram implements ExperimentsInterface
             throw $e;
         }
 
-        echo json_encode([
+
+        // DISASTER
+        $data = [
             'status' => 'ok',
             'type' => 'account_logged_in',
             'payload' => $response->getLoggedInUser()
-        ]).PHP_EOL;
+        ];
 
-        $this->settings->set('is_business', $response->getLoggedInUser()->isIsBusiness());
+        echo json_encode($data).PHP_EOL;
+
+        $result = json_decode(json_encode($data), true);
+
+        $bussines = 'false';
+
+        if (isset($result['payload']['is_business']) && $result['payload']['is_business']) {
+            $bussines = 'true';
+        }
+
+        $this->settings->set('is_business', $bussines);
+        // DISASTER
 
         $this->_updateLoginState($response);
 
