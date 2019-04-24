@@ -15,9 +15,12 @@ require __DIR__.'/storage/util/RedisKeys.php';
 
 /////// CONFIG ///////
 
+$username = '';
+$pk = '';
+$password = '';
 $debug = false;
-$redisUrl = 'redis://localhost:6379';
-$proxy = 'http://m046:fjlsdifelnauuodhajdk@10.24.130.1:3128';
+$redisUrl = '';
+$proxy = '';
 $truncatedDebug = false;
 /////////////////////
 

@@ -18,7 +18,8 @@ $username = '';
 $pk = '';
 $password = '';
 $debug = false;
-$redisUrl = 'redis://localhost:6379';
+$redisUrl = '';
+$proxy = '';
 $truncatedDebug = false;
 //////////////////////
 
@@ -32,8 +33,6 @@ $ig = new \InstagramAPI\Instagram($debug, $truncatedDebug,[
 try {
     $loginResponse = $ig->login($username,$pk, $password);
 
-    $loginResponse->getLoggedInUser()->getIsBusiness();
-
     if ($loginResponse !== null && $loginResponse->isTwoFactorRequired()) {
         $twoFactorIdentifier = $loginResponse->getTwoFactorInfo()->getTwoFactorIdentifier();
 
@@ -42,10 +41,7 @@ try {
         // The verification code will be sent by Instagram via SMS.
         $verificationCode = trim(fgets(STDIN));
         $user = $ig->finishTwoFactorLogin($username, $pk, $password, $twoFactorIdentifier, $verificationCode, '3');
-        print_r($user->getLoggedInUser());
     }
-
-    echo 'User: '.$ig->userLookup('miljan_rakita')->getUser();
 } catch (\Exception $e) {
     echo 'Something went wrong: '.$e->getMessage()."\n";
 }
