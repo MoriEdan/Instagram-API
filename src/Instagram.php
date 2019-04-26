@@ -1165,7 +1165,7 @@ class Instagram implements ExperimentsInterface
             // Reset zero rating rewrite rules.
             $this->client->zeroRating()->reset();
             // Perform the "user has just done a full login" API flow.
-            $this->internal->sendLauncherSync(false);
+            //$this->internal->sendLauncherSync(false);
             $this->internal->syncUserFeatures();
             $this->timeline->getTimelineFeed(null, ['recovered_from_crash' => true]);
             $this->story->getReelsTrayFeed();
