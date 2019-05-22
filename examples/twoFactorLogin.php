@@ -12,27 +12,30 @@ date_default_timezone_set('UTC');
 require __DIR__.'/../vendor/autoload.php';
 require __DIR__.'/storage/RedisStorage.php';
 require __DIR__.'/storage/util/RedisKeys.php';
+require __DIR__.'/storage/MongoLogger.php';
 
 /////// CONFIG ///////
 $username = '';
 $pk = '';
 $password = '';
 $debug = false;
-$redisUrl = 'redis://localhost:6379';
+$redisUrl = '';
 $truncatedDebug = false;
 //////////////////////
+
+$log = new MongoLogger();
 
 $ig = new \InstagramAPI\Instagram($debug, $truncatedDebug,[
     'storage' => 'custom',
     'class' => new RedisStorage(),
     'redis_url' => $redisUrl,
     'dbtablename' => 'account',
-]);
+], $log);
 
 try {
+
     $loginResponse = $ig->login($username,$pk, $password);
 
-    $loginResponse->getLoggedInUser()->getIsBusiness();
 
     if ($loginResponse !== null && $loginResponse->isTwoFactorRequired()) {
         $twoFactorIdentifier = $loginResponse->getTwoFactorInfo()->getTwoFactorIdentifier();
@@ -45,7 +48,7 @@ try {
         print_r($user->getLoggedInUser());
     }
 
-    echo 'User: '.$ig->userLookup('miljan_rakita')->getUser();
+    echo 'User: '.$ig->userLookup('_lucido__')->getUser();
 } catch (\Exception $e) {
     echo 'Something went wrong: '.$e->getMessage()."\n";
 }

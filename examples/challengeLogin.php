@@ -14,10 +14,12 @@ require __DIR__.'/storage/RedisStorage.php';
 require __DIR__.'/storage/util/RedisKeys.php';
 
 /////// CONFIG ///////
-
+$username = '';
+$pk = '';
+$password = '';
 $debug = false;
-$redisUrl = 'redis://localhost:6379';
-$proxy = 'http://m046:fjlsdifelnauuodhajdk@10.24.130.1:3128';
+$redisUrl = '';
+$proxy = '';
 $truncatedDebug = false;
 /////////////////////
 
@@ -40,7 +42,9 @@ try {
 
         echo "TWO-FACTOR";
     }
-    echo 'User: '.$ig->userLookup('miljan_rakita')->getUser();
+    $result = $ig->people->getInfoById(37885529);
+
+    echo $result->getHttpResponse()->getBody()->getContents();
 
 } catch (\InstagramAPI\Exception\ChallengeRequiredException $e ) {
 
@@ -63,8 +67,6 @@ try {
 
     $code = trim(fgets(STDIN));
     $ig->challenge->verify($code);
-
-    echo 'User: '.$ig->userLookup('miljan_rakita')->getUser();
 }
 catch (\Exception $e) {
     echo 'Something went wrong: '.$e->getMessage()."\n";

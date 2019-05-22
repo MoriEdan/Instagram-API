@@ -105,10 +105,12 @@ class RedisStorage implements StorageInterface
 
         $key = sprintf(RedisKeys::SEARCH_PK_KEY, $this->_dbTableName, $pk);
 
-        $result = $this->_redis->hGetAll($key);
+        $settings = $this->_redis->executeRaw(["JSON.GET", $key, ".settings"]);
+        $cookies = $this->_redis->executeRaw(["JSON.GET", $key, ".cookies"]);
 
-        if (!empty($result)) {
-            $this->_cache = $result;
+        if (!empty($settings) && !empty($cookies)) {
+            $this->_cache['settings'] = $settings;
+            $this->_cache['cookies'] = $cookies;
         } else {
             $this->_cache = [
                 'id'       => null,
@@ -179,7 +181,6 @@ class RedisStorage implements StorageInterface
         $this->_redis = null;
     }
 
-
     /**
      * Automatically writes to the correct user's row and caches the new value.
      *
@@ -196,9 +197,11 @@ class RedisStorage implements StorageInterface
 
         $key = sprintf(RedisKeys::SEARCH_PK_KEY, $this->_dbTableName, $this->_pk);
 
-        $this->_redis->hMSet($key, [
-            $column => $data
-        ]);
+        if (!$this->_redis->exists($key)) {
+            $this->_redis->executeRaw(["JSON.SET", $key, ".", '{"cookies":null,"settings":null}']);
+        }
+
+        $this->_redis->executeRaw(["JSON.SET", $key, ".$column", $data]);
 
         // Cache the new value.
         $this->_cache[$column] = $data;

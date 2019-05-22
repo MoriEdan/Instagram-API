@@ -4,6 +4,7 @@ namespace InstagramAPI;
 
 use InstagramAPI\Exception\ChallengeRequiredException;
 use InstagramAPI\Exception\InstagramException;
+use InstagramAPI\Settings\LogInterface;
 
 /**
  * Instagram's Private API v5.
@@ -186,6 +187,8 @@ class Instagram implements ExperimentsInterface
      */
     public $experiments;
 
+    public $pk;
+
     /** @var Request\Account Collection of Account related functions. */
     public $account;
     /** @var Request\Business Collection of Business related functions. */
@@ -226,6 +229,8 @@ class Instagram implements ExperimentsInterface
     public $usertag;
     /** @var Request\Challenge Collection of Challenge related functions. */
     public $challenge;
+    /** @var LogInterface */
+    public $logger;
 
     /**
      * Constructor.
@@ -240,7 +245,8 @@ class Instagram implements ExperimentsInterface
     public function __construct(
         $debug = false,
         $truncatedDebug = false,
-        array $storageConfig = [])
+        array $storageConfig = [],
+        LogInterface $logger = null)
     {
         // Disable incorrect web usage by default. People should never embed
         // this application emulator library directly in a webpage, or they
@@ -279,6 +285,8 @@ class Instagram implements ExperimentsInterface
                 ));
             }
         }
+
+        $this->logger = $logger;
 
         // Debugging options.
         $this->debug = $debug;
@@ -458,6 +466,7 @@ class Instagram implements ExperimentsInterface
         $skip = false,
         $appRefreshInterval = 1800)
     {
+        $this->pk = $pk;
         if (empty($username) || empty($password)) {
             throw new \InvalidArgumentException('You must provide a username and password to login().');
         }
