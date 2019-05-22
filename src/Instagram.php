@@ -464,6 +464,7 @@ class Instagram implements ExperimentsInterface
         $pk,
         $password,
         $skip = false,
+        $forceLogin = false,
         $appRefreshInterval = 1800)
     {
         $this->pk = $pk;
@@ -479,7 +480,7 @@ class Instagram implements ExperimentsInterface
 
             return '{"status":"ok"}';
         } else {
-            return $this->_login($username, $pk, $password, false, $appRefreshInterval);
+            return $this->_login($username, $pk, $password, $forceLogin, $appRefreshInterval);
         }
     }
 
@@ -582,13 +583,13 @@ class Instagram implements ExperimentsInterface
 
             $result = json_decode(json_encode($data), true);
 
-            $bussines = 'false';
+            $business = 'false';
 
             if (isset($result['payload']['is_business']) && $result['payload']['is_business']) {
-                $bussines = 'true';
+                $business = 'true';
             }
 
-            $this->settings->set('is_business', $bussines);
+            $this->settings->set('is_business', $business);
 
             // DISASTER
 
@@ -599,7 +600,6 @@ class Instagram implements ExperimentsInterface
             // Full (re-)login successfully completed. Return server response.
             return $response;
         }
-
 
         echo json_encode([
             'status' => 'ok',
@@ -1174,7 +1174,7 @@ class Instagram implements ExperimentsInterface
             // Reset zero rating rewrite rules.
             $this->client->zeroRating()->reset();
             // Perform the "user has just done a full login" API flow.
-            $this->internal->sendLauncherSync(false);
+            //$this->internal->sendLauncherSync(false);
             $this->internal->syncUserFeatures();
             $this->timeline->getTimelineFeed(null, ['recovered_from_crash' => true]);
             $this->story->getReelsTrayFeed();

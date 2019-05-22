@@ -20,6 +20,7 @@ $pk = '';
 $password = '';
 $debug = false;
 $redisUrl = '';
+$proxy = '';
 $truncatedDebug = false;
 //////////////////////
 
@@ -35,8 +36,6 @@ $ig = new \InstagramAPI\Instagram($debug, $truncatedDebug,[
 try {
 
     $loginResponse = $ig->login($username,$pk, $password);
-
-
     if ($loginResponse !== null && $loginResponse->isTwoFactorRequired()) {
         $twoFactorIdentifier = $loginResponse->getTwoFactorInfo()->getTwoFactorIdentifier();
 
@@ -45,10 +44,10 @@ try {
         // The verification code will be sent by Instagram via SMS.
         $verificationCode = trim(fgets(STDIN));
         $user = $ig->finishTwoFactorLogin($username, $pk, $password, $twoFactorIdentifier, $verificationCode, '3');
-        print_r($user->getLoggedInUser());
     }
 
     echo 'User: '.$ig->userLookup('_lucido__')->getUser();
+
 } catch (\Exception $e) {
     echo 'Something went wrong: '.$e->getMessage()."\n";
 }
