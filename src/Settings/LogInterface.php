@@ -9,16 +9,18 @@
 namespace InstagramAPI\Settings;
 
 
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
+
 interface LogInterface
 {
 
     /**
-     * @param array $request
-     * @param array $response
+     * @param RequestInterface $request
+     * @param ResponseInterface $response
      * @param $pk
-     * @throws \Exception
      * @return mixed
      */
-    function log(array $request, array $response, $pk);
+    function log(RequestInterface $request, ResponseInterface $response, $pk);
 
 }

@@ -679,30 +679,12 @@ class Client
 
         // log request
         try{
+            $logger = $this->_parent->logger;
+            if ($logger) {
+                $logger->log($request, $response, $this->_parent->pk);
+            }
 
-            // request data
-            $request->getBody()->rewind();
-            $requestData = [
-                'headers' => $request->getHeaders(),
-                'body' => $request->getBody()->getContents(),
-                'uri' => $request->getUri()
-            ];
-
-            // response data
-            $responseData = [
-                'headers' => $response->getHeaders(),
-                'body' => $response->getBody()->getContents(),
-                'status_code' => $httpCode
-            ];
-
-            print_r([
-               'request' => $requestData,
-               'response' => $responseData
-            ]);
-            die();
-        }catch (\Exception $e) {
-            echo $e->getMessage();
-        }
+        }catch (\Exception $e) {}
 
         switch ($httpCode) {
         case 429: // "429 Too Many Requests"
