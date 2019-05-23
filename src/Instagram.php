@@ -899,6 +899,8 @@ class Instagram implements ExperimentsInterface
         $pk,
         $password)
     {
+        $this->pk = $pk;
+
         if (empty($username) || empty($pk) || empty($password)) {
             throw new \InvalidArgumentException('You must provide a username and password to _setUser().');
         }
