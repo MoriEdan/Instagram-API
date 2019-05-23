@@ -683,6 +683,12 @@ class Client
         try{
             $logger = $this->_parent->logger;
             if ($logger) {
+
+                // If pk is not set try to get from storage.
+                if (!$this->_parent->pk) {
+                    $this->_parent->pk = $this->_parent->settings->get('pk');
+                }
+
                 $logger->log($request, $response, $this->_parent->pk, $time_elapsed_secs);
             }
 
