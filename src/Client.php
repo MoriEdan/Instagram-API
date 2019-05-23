@@ -666,6 +666,7 @@ class Client
         // Add critically important options for authenticating the request.
         $guzzleOptions = $this->_buildGuzzleOptions($guzzleOptions);
 
+        $start = microtime(true);
         // Attempt the request. Will throw in case of socket errors!
         try {
             $response = $this->_guzzleClient->send($request, $guzzleOptions);
@@ -673,6 +674,7 @@ class Client
             // Re-wrap Guzzle's exception using our own NetworkException.
             throw new \InstagramAPI\Exception\NetworkException($e);
         }
+        $time_elapsed_secs = microtime(true) - $start;
 
         // Detect very serious HTTP status codes in the response.
         $httpCode = $response->getStatusCode();
@@ -681,7 +683,7 @@ class Client
         try{
             $logger = $this->_parent->logger;
             if ($logger) {
-                $logger->log($request, $response, $this->_parent->pk);
+                $logger->log($request, $response, $this->_parent->pk, $time_elapsed_secs);
             }
 
         }catch (\Exception $e) {

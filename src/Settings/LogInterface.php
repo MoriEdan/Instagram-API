@@ -14,13 +14,14 @@ use Psr\Http\Message\ResponseInterface;
 
 interface LogInterface
 {
-
     /**
      * @param RequestInterface $request
      * @param ResponseInterface $response
      * @param $pk
+     * @param $elapsed_time
+     * @throws \Exception
      * @return mixed
      */
-    function log(RequestInterface $request, ResponseInterface $response, $pk);
+    function log(RequestInterface $request, ResponseInterface $response, $pk, $elapsed_time);
 
 }
