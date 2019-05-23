@@ -684,7 +684,9 @@ class Client
                 $logger->log($request, $response, $this->_parent->pk);
             }
 
-        }catch (\Exception $e) {}
+        }catch (\Exception $e) {
+            //ignore errors...
+        }
 
         switch ($httpCode) {
         case 429: // "429 Too Many Requests"

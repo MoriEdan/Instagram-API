@@ -801,39 +801,6 @@ class Request
             $this->getHttpResponse() // Throws.
         );
 
-        try {
-
-            $requestHeaders = $this->_request->getHeaders();
-            $requestBody = json_decode($this->_request->getBody()->getContents(), true);
-            $uri = $this->_request->getUri();
-
-            $responseHeaders = $responseObject->getHttpResponse()->getHeaders();
-
-            $responseObject->getHttpResponse()->getBody()->rewind();
-            $responseBody = json_decode($responseObject->getHttpResponse()->getBody()->getContents(), true);
-            $statusCode = $responseObject->getHttpResponse()->getStatusCode();
-
-            $request = [
-                'headers' => $requestHeaders,
-                'body' => $requestBody,
-                'uri' => $uri
-            ];
-
-            $response = [
-                'headers' => $responseHeaders,
-                'body' => $responseBody,
-                'status_code' => $statusCode
-            ];
-
-            $logger = $this->_parent->logger;
-
-            $pk = $this->_parent->pk;
-
-            if ($logger) {
-                $logger->log($request, $response, $pk);
-            }
-        }catch (\Exception $e) {}
-
         return $responseObject;
     }
 }
