@@ -808,6 +808,8 @@ class Request
             $uri = $this->_request->getUri();
 
             $responseHeaders = $responseObject->getHttpResponse()->getHeaders();
+
+            $responseObject->getHttpResponse()->getBody()->rewind();
             $responseBody = json_decode($responseObject->getHttpResponse()->getBody()->getContents(), true);
             $statusCode = $responseObject->getHttpResponse()->getStatusCode();
 
