@@ -522,9 +522,10 @@ class Instagram implements ExperimentsInterface
 
         // Perform a full relogin if necessary.
         if (!$this->isMaybeLoggedIn || $forceLogin) {
-            $this->_sendPreLoginFlow();
 
             try {
+                $this->_sendPreLoginFlow();
+
                 $response = $this->request('accounts/login/')
                     ->setNeedsAuth(false)
                     ->addPost('phone_id', $this->phone_id)
@@ -538,7 +539,8 @@ class Instagram implements ExperimentsInterface
                     ->getResponse(new Response\LoginResponse());
 
             } catch (\InstagramAPI\Exception\InstagramException $e) {
-                if ($e->hasResponse() && $e->getResponse()->isTwoFactorRequired()) {
+
+                if ($e->hasResponse() && $e->getResponse()->hasTwoFactorRequired() && $e->getResponse()->isTwoFactorRequired()) {
                     // Login failed because two-factor login is required.
                     // Return server response to tell user they need 2-factor.
 

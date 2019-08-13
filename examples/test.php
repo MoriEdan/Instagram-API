@@ -37,6 +37,7 @@ $ig = new \InstagramAPI\Instagram($debug, $truncatedDebug,[
 try{
     $loginResponse = $ig->login($username,$pk, $password);
 
+    $ig->people->follow("123123");
     if ($loginResponse !== null && $loginResponse->isTwoFactorRequired()) {
         $twoFactorIdentifier = $loginResponse->getTwoFactorInfo()->getTwoFactorIdentifier();
 

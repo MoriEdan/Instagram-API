@@ -19,23 +19,25 @@ $username = '';
 $pk = '';
 $password = '';
 $debug = false;
-$redisUrl = '';
-$proxy = '';
+$redisUrl = 'redis://localhost:6379';
+$proxy = 'http://127.0.0.1:8030';
 $truncatedDebug = false;
 //////////////////////
-
-$log = new MongoLogger();
 
 $ig = new \InstagramAPI\Instagram($debug, $truncatedDebug,[
     'storage' => 'custom',
     'class' => new RedisStorage(),
     'redis_url' => $redisUrl,
     'dbtablename' => 'account',
-], $log);
+], null);
+
+$ig->setVerifySSL(false);
+$ig->setProxy($proxy);
 
 try {
 
-    $loginResponse = $ig->login($username,$pk, $password);
+    $loginResponse = $ig->login($username,$pk, $password, false, true);
+
     if ($loginResponse !== null && $loginResponse->isTwoFactorRequired()) {
         $twoFactorIdentifier = $loginResponse->getTwoFactorInfo()->getTwoFactorIdentifier();
 
@@ -46,8 +48,12 @@ try {
         $user = $ig->finishTwoFactorLogin($username, $pk, $password, $twoFactorIdentifier, $verificationCode, '3');
     }
 
-    echo 'User: '.$ig->userLookup('_lucido__')->getUser();
+    $r = $ig->people->getInfoById('');
 
-} catch (\Exception $e) {
-    echo 'Something went wrong: '.$e->getMessage()."\n";
+} catch (\InstagramAPI\Exception\ChallengeRequiredException $e) {
+    echo $e->getMessage();
+    //$path = trim(fgets(STDIN));
+    //$result = $ig->challenge->getInfo('12999683353', '12999683353', $path);
+} catch (Exception $e) {
+
 }
