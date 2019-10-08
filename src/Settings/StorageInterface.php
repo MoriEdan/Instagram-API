@@ -141,11 +141,12 @@ interface StorageInterface
      *
      * @param string $username The Instagram username.
      * @param string $pk The Instagram username.
+     * @param string|null $deviceId
      *
      * @throws \InstagramAPI\Exception\SettingsException
      */
     public function openUser(
-        $username, $pk);
+        $username, $pk, $deviceId = null);
 
     /**
      * Load all settings for the currently active user.

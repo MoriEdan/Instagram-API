@@ -14,12 +14,7 @@ require __DIR__.'/storage/RedisStorage.php';
 require __DIR__.'/storage/util/RedisKeys.php';
 
 /////// CONFIG ///////
-$username = '';
-$pk = '';
-$password = '';
-$debug = false;
-$redisUrl = '';
-$proxy = '';
+
 $truncatedDebug = false;
 //////////////////////
 
@@ -31,6 +26,8 @@ $ig = new \InstagramAPI\Instagram($debug, $truncatedDebug,[
 ]);
 
 try {
+    $ig->setVerifySSL(false);
+    $ig->setProxy($proxy);
     $loginResponse = $ig->login($username,$pk, $password);
 
     if ($loginResponse !== null && $loginResponse->isTwoFactorRequired()) {

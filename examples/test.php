@@ -15,12 +15,7 @@ require __DIR__.'/storage/util/RedisKeys.php';
 
 /////// CONFIG ///////
 
-$username = '';
-$pk = '';
-$password = '';
 
-$debug = false;
-$redisUrl = 'redis://localhost:6379';
 $truncatedDebug = false;
 //////////////////////
 
@@ -31,11 +26,15 @@ $ig = new \InstagramAPI\Instagram($debug, $truncatedDebug,[
     'dbtablename' => 'account',
 ]);
 
-//$ig->setVerifySSL(false);
-//$ig->setProxy('http://110.227.188.91:63141/');
-
 try{
+    $ig->setVerifySSL(false);
+    $ig->setProxy($proxy);
     $loginResponse = $ig->login($username,$pk, $password);
+
+    $result = $ig->business->getInsights();
+    $result = $ig->business->getStatistics();
+
+    echo $result.PHP_EOL;
 
     if ($loginResponse !== null && $loginResponse->isTwoFactorRequired()) {
         $twoFactorIdentifier = $loginResponse->getTwoFactorInfo()->getTwoFactorIdentifier();

@@ -715,7 +715,6 @@ class Instagram implements ExperimentsInterface
         }
 
         $this->settings->set('is_business', $bussines);
-        // DISASTER
 
         $this->_updateLoginState($response);
 
