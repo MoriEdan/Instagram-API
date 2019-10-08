@@ -435,6 +435,9 @@ class Instagram implements ExperimentsInterface
      * @param string $pk                 Instagram pk, it is unique identifier
      *                                   for each instagram account
      *
+     * @param string @$deviceId          tells with which device id we want
+     *                                   to login
+     *
      * @param string $password           Your Instagram password.
      * @param int    $appRefreshInterval How frequently `login()` should act
      *                                   like an Instagram app that's been
@@ -465,7 +468,8 @@ class Instagram implements ExperimentsInterface
         $password,
         $skip = false,
         $forceLogin = false,
-        $appRefreshInterval = 1800)
+        $appRefreshInterval = 1800,
+        $deviceId = null)
     {
         $this->pk = $pk;
         if (empty($username) || empty($password)) {
@@ -480,7 +484,7 @@ class Instagram implements ExperimentsInterface
 
             return '{"status":"ok"}';
         } else {
-            return $this->_login($username, $pk, $password, $forceLogin, $appRefreshInterval);
+            return $this->_login($username, $pk, $password, $forceLogin, $appRefreshInterval, $deviceId);
         }
     }
 
@@ -509,7 +513,8 @@ class Instagram implements ExperimentsInterface
         $pk,
         $password,
         $forceLogin = false,
-        $appRefreshInterval = 1800)
+        $appRefreshInterval = 1800,
+        $deviceId = null)
     {
         if (empty($username) || empty($password)) {
             throw new \InvalidArgumentException('You must provide a username and password to _login().');
@@ -517,7 +522,7 @@ class Instagram implements ExperimentsInterface
 
         // Switch the currently active user/pass if the details are different.
         if ($this->username !== $username || $this->password !== $password) {
-            $this->_setUser($username,$pk, $password);
+            $this->_setUser($username,$pk, $password, $deviceId);
         }
 
         // Perform a full relogin if necessary.
@@ -899,7 +904,8 @@ class Instagram implements ExperimentsInterface
     public function _setUser(
         $username,
         $pk,
-        $password)
+        $password,
+        $deviceId)
     {
         $this->pk = $pk;
 
@@ -908,7 +914,7 @@ class Instagram implements ExperimentsInterface
         }
 
         // Load all settings from the storage and mark as current user.
-        $this->settings->setActiveUser($username, $pk);
+        $this->settings->setActiveUser($username, $pk, $deviceId);
 
         // Generate the user's device instance, which will be created from the
         // user's last-used device IF they've got a valid, good one stored.
