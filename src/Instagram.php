@@ -951,8 +951,13 @@ class Instagram implements ExperimentsInterface
             // Save the chosen device string to settings.
             $this->settings->set('devicestring', $deviceString);
 
+            if (!$deviceId) {
+                $deviceId = Signatures::generateDeviceId();
+                $this->device_id = $deviceId;
+            }
+
             // Generate hardware fingerprints for the new device.
-            $this->settings->set('device_id', Signatures::generateDeviceId());
+            $this->settings->set('device_id', $deviceId);
             $this->settings->set('phone_id', Signatures::generateUUID(true));
             $this->settings->set('uuid', Signatures::generateUUID(true));
 
