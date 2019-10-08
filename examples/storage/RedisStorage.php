@@ -97,7 +97,7 @@ class RedisStorage implements StorageInterface
         $this->_redis->del($key);
     }
 
-    public function openUser($username, $pk)
+    public function openUser($username, $pk, $deviceId = null)
     {
 
         $this->_username = $username;
