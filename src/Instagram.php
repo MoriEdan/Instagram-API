@@ -472,7 +472,6 @@ class Instagram implements ExperimentsInterface
         $deviceId = null)
     {
         $this->pk = $pk;
-        $this->device_id = $deviceId;
 
         if (empty($username) || empty($password)) {
             throw new \InvalidArgumentException('You must provide a username and password to login().');
