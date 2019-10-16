@@ -484,14 +484,16 @@ class Client
         // failed or some other bad thing happened. So analyze the HTTP status
         // code (if available) to see what really happened.
         if (!is_array($jsonArray)) {
+
             $httpStatusCode = $httpResponse !== null ? $httpResponse->getStatusCode() : null;
+
             switch ($httpStatusCode) {
                 case 400:
-                    throw new \InstagramAPI\Exception\BadRequestException('Invalid request options.');
+                    throw new \InstagramAPI\Exception\BadRequestException('Status code: '.$httpStatusCode.' Invalid request options. '. $rawResponse);
                 case 404:
-                    throw new \InstagramAPI\Exception\NotFoundException('Requested resource does not exist.');
+                    throw new \InstagramAPI\Exception\NotFoundException('Status code: '.$httpStatusCode.' Requested resource does not exist. '. $rawResponse);
                 default:
-                    throw new \InstagramAPI\Exception\EmptyResponseException('No response from server. Either a connection or configuration error.');
+                    throw new \InstagramAPI\Exception\EmptyResponseException('Status code: '.$httpStatusCode.' No response from server. Either a connection or configuration error. '. $rawResponse);
             }
         }
 
