@@ -2,8 +2,10 @@
 
 namespace InstagramAPI;
 
+use InstagramAPI\Events\InstagramEvent;
 use InstagramAPI\Exception\ChallengeRequiredException;
 use InstagramAPI\Exception\InstagramException;
+use InstagramAPI\Listeners\EventListener;
 use InstagramAPI\Settings\LogInterface;
 
 /**
@@ -231,6 +233,8 @@ class Instagram implements ExperimentsInterface
     public $challenge;
     /** @var LogInterface */
     public $logger;
+    /** @var array  */
+    public $eventListeners;
 
     /**
      * Constructor.
@@ -287,6 +291,7 @@ class Instagram implements ExperimentsInterface
         }
 
         $this->logger = $logger;
+        $this->eventListeners = [];
 
         // Debugging options.
         $this->debug = $debug;
@@ -1366,5 +1371,20 @@ class Instagram implements ExperimentsInterface
         $url)
     {
         return new Request($this, $url);
+    }
+
+    public function addEventListener($eventName, EventListener $listener) {
+        $this->eventListeners[$eventName][] = $listener;
+    }
+
+    public function emitEvent($eventName, InstagramEvent $event) {
+
+        $listeners = $this->eventListeners[$eventName];
+
+        foreach ($listeners as $listener) {
+
+            $listener->handle($event);
+        }
+
     }
 }

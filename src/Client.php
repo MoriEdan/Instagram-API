@@ -6,6 +6,7 @@ use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Cookie\CookieJar;
 use GuzzleHttp\Cookie\SetCookie;
 use GuzzleHttp\HandlerStack;
+use InstagramAPI\Events\LoginRequiredEvent;
 use InstagramAPI\Exception\InstagramException;
 use InstagramAPI\Exception\LoginRequiredException;
 use InstagramAPI\Exception\ServerMessageThrower;
@@ -585,6 +586,13 @@ class Client
                 // their server. When this flag is false, ALL further attempts
                 // at AUTHENTICATED requests will be aborted by our library.
                 $this->_parent->isMaybeLoggedIn = false;
+
+                // If pk is not set try to get from storage.
+                if (!$this->_parent->pk) {
+                    $this->_parent->pk = $this->_parent->settings->get('pk');
+                }
+
+                $this->_parent->emitEvent('login_required_event', new LoginRequiredEvent($this->_parent->pk, $message));
 
                 throw $e; // Re-throw.
             }
