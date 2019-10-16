@@ -38,6 +38,18 @@ class Challenge extends RequestCollection
             ->getResponse(new Response\ChallengeSelectVerifyMethod());
     }
 
+    public function resolveChallenge($choice) {
+
+        return $this->ig->request("challenge")
+            ->setNeedsAuth(false)
+            ->addPost('_csrftoken', $this->ig->client->getToken())
+            ->addPost('_uuid', $this->ig->uuid)
+            ->addPost('choice', $choice)
+            ->addPost('device_id', $this->ig->uuid)
+            ->addPost('_uid', $this->ig->account_id)
+            ->getResponse(new Response\ResolveChallenge());
+    }
+
 
     public function verify($securityCode, $appRefreshInterval = 1800) {
 
