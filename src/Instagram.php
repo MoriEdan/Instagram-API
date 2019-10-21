@@ -1379,7 +1379,7 @@ class Instagram implements ExperimentsInterface
 
     public function emitEvent($eventName, InstagramEvent $event) {
 
-        $listeners = $this->eventListeners[$eventName];
+        $listeners = isset($this->eventListeners[$eventName]) ? $this->eventListeners[$eventName] : [];
 
         foreach ($listeners as $listener) {
 

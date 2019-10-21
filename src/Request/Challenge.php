@@ -8,7 +8,6 @@
 
 namespace InstagramAPI\Request;
 
-use function Couchbase\defaultDecoder;
 use InstagramAPI\Exception\InstagramException;
 use InstagramAPI\Response;
 
