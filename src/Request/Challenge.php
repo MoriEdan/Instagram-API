@@ -8,7 +8,6 @@
 
 namespace InstagramAPI\Request;
 
-use function Couchbase\defaultDecoder;
 use InstagramAPI\Exception\InstagramException;
 use InstagramAPI\Response;
 
@@ -36,6 +35,18 @@ class Challenge extends RequestCollection
             ->addPost('choice', $choice)
             ->addPost('device_id', $this->ig->uuid)
             ->getResponse(new Response\ChallengeSelectVerifyMethod());
+    }
+
+    public function resolveChallenge($choice) {
+
+        return $this->ig->request("challenge")
+            ->setNeedsAuth(false)
+            ->addPost('_csrftoken', $this->ig->client->getToken())
+            ->addPost('_uuid', $this->ig->uuid)
+            ->addPost('choice', $choice)
+            ->addPost('device_id', $this->ig->uuid)
+            ->addPost('_uid', $this->ig->account_id)
+            ->getResponse(new Response\ResolveChallenge());
     }
 
 

@@ -84,7 +84,7 @@ interface StorageInterface
      * @return bool TRUE if user exists, otherwise FALSE.
      */
     public function hasUser(
-        $pk);
+        $pk, $deviceId = null);
 
     /**
      * Move the internal data for a username to a new username.

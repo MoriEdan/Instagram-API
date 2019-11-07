@@ -2,8 +2,11 @@
 
 namespace InstagramAPI;
 
+use InstagramAPI\Events\InstagramEvent;
 use InstagramAPI\Exception\ChallengeRequiredException;
 use InstagramAPI\Exception\InstagramException;
+use InstagramAPI\Listeners\EventListener;
+use InstagramAPI\Settings\LogInterface;
 
 /**
  * Instagram's Private API v5.
@@ -186,6 +189,8 @@ class Instagram implements ExperimentsInterface
      */
     public $experiments;
 
+    public $pk;
+
     /** @var Request\Account Collection of Account related functions. */
     public $account;
     /** @var Request\Business Collection of Business related functions. */
@@ -226,6 +231,10 @@ class Instagram implements ExperimentsInterface
     public $usertag;
     /** @var Request\Challenge Collection of Challenge related functions. */
     public $challenge;
+    /** @var LogInterface */
+    public $logger;
+    /** @var array  */
+    public $eventListeners;
 
     /**
      * Constructor.
@@ -240,7 +249,8 @@ class Instagram implements ExperimentsInterface
     public function __construct(
         $debug = false,
         $truncatedDebug = false,
-        array $storageConfig = [])
+        array $storageConfig = [],
+        LogInterface $logger = null)
     {
         // Disable incorrect web usage by default. People should never embed
         // this application emulator library directly in a webpage, or they
@@ -279,6 +289,9 @@ class Instagram implements ExperimentsInterface
                 ));
             }
         }
+
+        $this->logger = $logger;
+        $this->eventListeners = [];
 
         // Debugging options.
         $this->debug = $debug;
@@ -427,6 +440,9 @@ class Instagram implements ExperimentsInterface
      * @param string $pk                 Instagram pk, it is unique identifier
      *                                   for each instagram account
      *
+     * @param string @$deviceId          tells with which device id we want
+     *                                   to login
+     *
      * @param string $password           Your Instagram password.
      * @param int    $appRefreshInterval How frequently `login()` should act
      *                                   like an Instagram app that's been
@@ -457,8 +473,11 @@ class Instagram implements ExperimentsInterface
         $password,
         $skip = false,
         $forceLogin = false,
-        $appRefreshInterval = 1800)
+        $appRefreshInterval = 1800,
+        $deviceId = null)
     {
+        $this->pk = $pk;
+
         if (empty($username) || empty($password)) {
             throw new \InvalidArgumentException('You must provide a username and password to login().');
         }
@@ -471,7 +490,7 @@ class Instagram implements ExperimentsInterface
 
             return '{"status":"ok"}';
         } else {
-            return $this->_login($username, $pk, $password, $forceLogin, $appRefreshInterval);
+            return $this->_login($username, $pk, $password, $forceLogin, $appRefreshInterval, $deviceId);
         }
     }
 
@@ -500,7 +519,8 @@ class Instagram implements ExperimentsInterface
         $pk,
         $password,
         $forceLogin = false,
-        $appRefreshInterval = 1800)
+        $appRefreshInterval = 1800,
+        $deviceId = null)
     {
         if (empty($username) || empty($password)) {
             throw new \InvalidArgumentException('You must provide a username and password to _login().');
@@ -508,14 +528,15 @@ class Instagram implements ExperimentsInterface
 
         // Switch the currently active user/pass if the details are different.
         if ($this->username !== $username || $this->password !== $password) {
-            $this->_setUser($username,$pk, $password);
+            $this->_setUser($username,$pk, $password, $deviceId);
         }
 
         // Perform a full relogin if necessary.
         if (!$this->isMaybeLoggedIn || $forceLogin) {
-            $this->_sendPreLoginFlow();
 
             try {
+                $this->_sendPreLoginFlow();
+
                 $response = $this->request('accounts/login/')
                     ->setNeedsAuth(false)
                     ->addPost('phone_id', $this->phone_id)
@@ -529,7 +550,8 @@ class Instagram implements ExperimentsInterface
                     ->getResponse(new Response\LoginResponse());
 
             } catch (\InstagramAPI\Exception\InstagramException $e) {
-                if ($e->hasResponse() && $e->getResponse()->isTwoFactorRequired()) {
+
+                if ($e->hasResponse() && $e->getResponse()->hasTwoFactorRequired() && $e->getResponse()->isTwoFactorRequired()) {
                     // Login failed because two-factor login is required.
                     // Return server response to tell user they need 2-factor.
 
@@ -887,14 +909,18 @@ class Instagram implements ExperimentsInterface
     public function _setUser(
         $username,
         $pk,
-        $password)
+        $password,
+        $deviceId = null)
     {
+        $this->pk = $pk;
+        $this->device_id = $deviceId;
+
         if (empty($username) || empty($pk) || empty($password)) {
             throw new \InvalidArgumentException('You must provide a username and password to _setUser().');
         }
 
         // Load all settings from the storage and mark as current user.
-        $this->settings->setActiveUser($username, $pk);
+        $this->settings->setActiveUser($username, $pk, $deviceId);
 
         // Generate the user's device instance, which will be created from the
         // user's last-used device IF they've got a valid, good one stored.
@@ -928,8 +954,13 @@ class Instagram implements ExperimentsInterface
             // Save the chosen device string to settings.
             $this->settings->set('devicestring', $deviceString);
 
+            if (!$deviceId) {
+                $deviceId = Signatures::generateDeviceId();
+                $this->device_id = $deviceId;
+            }
+
             // Generate hardware fingerprints for the new device.
-            $this->settings->set('device_id', Signatures::generateDeviceId());
+            $this->settings->set('device_id', $deviceId);
             $this->settings->set('phone_id', Signatures::generateUUID(true));
             $this->settings->set('uuid', Signatures::generateUUID(true));
 
@@ -1339,5 +1370,20 @@ class Instagram implements ExperimentsInterface
         $url)
     {
         return new Request($this, $url);
+    }
+
+    public function addEventListener($eventName, EventListener $listener) {
+        $this->eventListeners[$eventName][] = $listener;
+    }
+
+    public function emitEvent($eventName, InstagramEvent $event) {
+
+        $listeners = isset($this->eventListeners[$eventName]) ? $this->eventListeners[$eventName] : [];
+
+        foreach ($listeners as $listener) {
+
+            $listener->handle($event);
+        }
+
     }
 }

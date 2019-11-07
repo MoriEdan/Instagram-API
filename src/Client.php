@@ -6,6 +6,7 @@ use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Cookie\CookieJar;
 use GuzzleHttp\Cookie\SetCookie;
 use GuzzleHttp\HandlerStack;
+use InstagramAPI\Events\LoginRequiredEvent;
 use InstagramAPI\Exception\InstagramException;
 use InstagramAPI\Exception\LoginRequiredException;
 use InstagramAPI\Exception\ServerMessageThrower;
@@ -483,14 +484,16 @@ class Client
         // failed or some other bad thing happened. So analyze the HTTP status
         // code (if available) to see what really happened.
         if (!is_array($jsonArray)) {
+
             $httpStatusCode = $httpResponse !== null ? $httpResponse->getStatusCode() : null;
+
             switch ($httpStatusCode) {
                 case 400:
-                    throw new \InstagramAPI\Exception\BadRequestException('Invalid request options.');
+                    throw new \InstagramAPI\Exception\BadRequestException('Status code: '.$httpStatusCode.' Invalid request options. '. $rawResponse);
                 case 404:
-                    throw new \InstagramAPI\Exception\NotFoundException('Requested resource does not exist.');
+                    throw new \InstagramAPI\Exception\NotFoundException('Status code: '.$httpStatusCode.' Requested resource does not exist. '. $rawResponse);
                 default:
-                    throw new \InstagramAPI\Exception\EmptyResponseException('No response from server. Either a connection or configuration error.');
+                    throw new \InstagramAPI\Exception\EmptyResponseException('Status code: '.$httpStatusCode.' No response from server. Either a connection or configuration error. '. $rawResponse);
             }
         }
 
@@ -586,6 +589,13 @@ class Client
                 // at AUTHENTICATED requests will be aborted by our library.
                 $this->_parent->isMaybeLoggedIn = false;
 
+                // If pk is not set try to get from storage.
+                if (!$this->_parent->pk) {
+                    $this->_parent->pk = $this->_parent->settings->get('pk');
+                }
+
+                $this->_parent->emitEvent('login_required_event', new LoginRequiredEvent($this->_parent->pk, $message));
+
                 throw $e; // Re-throw.
             }
         }
@@ -666,6 +676,7 @@ class Client
         // Add critically important options for authenticating the request.
         $guzzleOptions = $this->_buildGuzzleOptions($guzzleOptions);
 
+        $start = microtime(true);
         // Attempt the request. Will throw in case of socket errors!
         try {
             $response = $this->_guzzleClient->send($request, $guzzleOptions);
@@ -673,9 +684,28 @@ class Client
             // Re-wrap Guzzle's exception using our own NetworkException.
             throw new \InstagramAPI\Exception\NetworkException($e);
         }
+        $time_elapsed_secs = microtime(true) - $start;
 
         // Detect very serious HTTP status codes in the response.
         $httpCode = $response->getStatusCode();
+
+        // log request
+        try{
+            $logger = $this->_parent->logger;
+            if ($logger) {
+
+                // If pk is not set try to get from storage.
+                if (!$this->_parent->pk) {
+                    $this->_parent->pk = $this->_parent->settings->get('pk');
+                }
+
+                $logger->log($request, $response, $this->_parent->pk, $time_elapsed_secs);
+            }
+
+        }catch (\Exception $e) {
+            //ignore errors...
+        }
+
         switch ($httpCode) {
         case 429: // "429 Too Many Requests"
             throw new \InstagramAPI\Exception\ThrottledException('Throttled by Instagram because of too many API requests.');

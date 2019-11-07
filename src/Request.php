@@ -144,6 +144,11 @@ class Request
     protected $_httpResponse;
 
     /**
+     * @var HttpRequest
+     */
+    protected $_request;
+
+    /**
      * Constructor.
      *
      * @param Instagram $parent
@@ -664,12 +669,15 @@ class Request
         // Determine request method.
         $method = $postData !== null ? 'POST' : 'GET';
         // Build HTTP request object.
-        return new HttpRequest( // Throws (they didn't document that properly).
+
+        $this->_request = new HttpRequest( // Throws (they didn't document that properly).
             $method,
             $endpoint,
             $this->_headers,
             $postData
         );
+
+        return $this->_request;
     }
 
     /**

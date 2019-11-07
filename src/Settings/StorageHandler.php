@@ -117,6 +117,9 @@ class StorageHandler
     /** @var string Current Instagram pk that all settings blong to */
     private $_pk;
 
+    /** @var string device id from which user is logged in.  */
+    private $_deviceId;
+
     /** @var array Cache for the current user's key-value settings pairs. */
     private $_userSettings;
 
@@ -170,6 +173,7 @@ class StorageHandler
             $this->_storage->closeUser();
             $this->_username = null;
             $this->pk = null;
+            $this->_deviceId = null;
         }
         $this->_storage->closeLocation();
     }
@@ -184,11 +188,11 @@ class StorageHandler
      * @return bool TRUE if user exists, otherwise FALSE.
      */
     public function hasUser(
-        $pk)
+        $pk, $deviceId = null)
     {
         $this->_throwIfEmptyValue($pk);
 
-        return $this->_storage->hasUser($pk);
+        return $this->_storage->hasUser($pk, $deviceId);
     }
 
     /**
@@ -261,7 +265,7 @@ class StorageHandler
      * @throws \InstagramAPI\Exception\SettingsException
      */
     public function setActiveUser(
-        $username, $pk)
+        $username, $pk, $deviceId = null)
     {
         $this->_throwIfEmptyValue($pk);
         $this->_throwIfEmptyValue($username);
@@ -287,7 +291,7 @@ class StorageHandler
         $this->_username = $username;
         $this->_pk = $pk;
         $this->_userSettings = [];
-        $this->_storage->openUser($username, $pk);
+        $this->_storage->openUser($username, $pk, $deviceId);
 
         // Retrieve any existing settings for the user from the backend.
         $loadedSettings = $this->_storage->loadUserSettings();
