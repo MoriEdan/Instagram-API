@@ -1052,7 +1052,7 @@ class Utils
         $requiredKeys = ['tag_name', 'use_custom_title', 'is_sticker'];
 
         // Extract all hashtags from the caption using a UTF-8 aware regex.
-        if (!preg_match_all('/#(\w+)/u', $captionText, $tagsInCaption)) {
+        if (!preg_match_all('/#(\w+[^\x00-\x7F]?+)/u', $captionText, $tagsInCaption)) {
             throw new \InvalidArgumentException('Invalid caption for hashtag.');
         }
 
@@ -1167,11 +1167,12 @@ class Utils
      * Checks and validates a media item's type.
      *
      * @param string|int $mediaType The type of the media item. One of: "PHOTO", "VIDEO"
-     *                              "ALBUM", or the raw value of the Item's "getMediaType()" function.
+     *                              "CAROUSEL", or the raw value of the Item's "getMediaType()" function.
+     *
      *
      * @throws \InvalidArgumentException If the type is invalid.
      *
-     * @return string The verified final type; either "PHOTO", "VIDEO" or "ALBUM".
+     * @return string The verified final type; either "PHOTO", "VIDEO" or "CAROUSEL".
      */
     public static function checkMediaType(
         $mediaType)
@@ -1181,11 +1182,11 @@ class Utils
                 $mediaType = 'PHOTO';
             } elseif ($mediaType == Item::VIDEO) {
                 $mediaType = 'VIDEO';
-            } elseif ($mediaType == Item::ALBUM) {
-                $mediaType = 'ALBUM';
+            } elseif ($mediaType == Item::CAROUSEL) {
+                $mediaType = 'CAROUSEL';
             }
         }
-        if (!in_array($mediaType, ['PHOTO', 'VIDEO', 'ALBUM'], true)) {
+        if (!in_array($mediaType, ['PHOTO', 'VIDEO', 'CAROUSEL'], true)) {
             throw new \InvalidArgumentException(sprintf('"%s" is not a valid media type.', $mediaType));
         }
 

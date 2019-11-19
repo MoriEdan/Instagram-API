@@ -46,6 +46,16 @@ class Client
     protected $_parent;
 
     /**
+     * The most recent request processed.
+     *
+     * Used for debugging failed requests in exceptions without needing to
+     * enable debug mode.
+     *
+     * @var Request
+     */
+    private $_lastRequest;
+
+    /**
      * What user agent to identify our client as.
      *
      * @var string
@@ -819,7 +829,6 @@ class Client
                 // Keep the API's HTTPS connection alive in Guzzle for future
                 // re-use, to greatly speed up all further queries after this.
                 'Connection'       => 'Keep-Alive',
-                'X-FB-HTTP-Engine' => Constants::X_FB_HTTP_Engine,
                 'Accept'           => '*/*',
                 'Accept-Encoding'  => Constants::ACCEPT_ENCODING,
                 'Accept-Language'  => Constants::ACCEPT_LANGUAGE,
@@ -857,6 +866,26 @@ class Client
         $assoc = true)
     {
         return @json_decode($json, $assoc, 512, JSON_BIGINT_AS_STRING);
+    }
+
+    /**
+     * Sets the last processed request.
+     *
+     * @param Request $endpoint The last processed request
+     */
+    public function setLastRequest(
+        $endpoint)
+    {
+        $this->_lastRequest = $endpoint;
+    }
+    /**
+     * Gets the last processed point.
+     *
+     * @return Request
+     */
+    public function getLastRequest()
+    {
+        return $this->_lastRequest;
     }
 
     /**

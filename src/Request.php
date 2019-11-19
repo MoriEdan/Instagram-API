@@ -31,6 +31,14 @@ class Request
     protected $_apiVersion;
 
     /**
+     * Set gz-compressed request params flag.
+     *
+     *
+     * @var bool
+     */
+    protected $_isBodyCompressed;
+
+    /**
      * Endpoint URL (absolute or relative) for this request.
      *
      * @var string
@@ -173,6 +181,7 @@ class Request
         $this->_signedPost = true;
         $this->_signedGet = false;
         $this->_isMultiResponse = false;
+        $this->_isBodyCompressed = false;
         $this->_excludeSigned = [];
         $this->_defaultHeaders = true;
     }
@@ -202,6 +211,27 @@ class Request
             throw new \InvalidArgumentException(sprintf('"%d" is not a supported API version.', $apiVersion));
         }
         $this->_apiVersion = $apiVersion;
+
+        return $this;
+    }
+
+    /**
+     * Set gz-compressed request params flag.
+     *
+     * @param bool $isBodyCompressed
+     *
+     * @return self
+     */
+    public function setIsBodyCompressed(
+        $isBodyCompressed = false)
+    {
+        $this->_isBodyCompressed = $isBodyCompressed;
+
+        if ($isBodyCompressed === true) {
+            $this->_headers['Content-Encoding'] = 'gzip';
+        } elseif (isset($this->_headers['Content-Encoding']) && $this->_headers['Content-Encoding'] === 'gzip') {
+            unset($this->_headers['Content-Encoding']);
+        }
 
         return $this;
     }
@@ -617,6 +647,10 @@ class Request
     {
         // Check and return raw body stream if set.
         if ($this->_body !== null) {
+            if ($this->_isBodyCompressed) {
+                return stream_for(zlib_encode((string) $this->_body, ZLIB_ENCODING_GZIP));
+            }
+
             return $this->_body;
         }
         // We have no POST data and no files.
@@ -632,6 +666,10 @@ class Request
             $result = $this->_getUrlencodedBody(); // Throws.
         } else {
             $result = $this->_getMultipartBody(); // Throws.
+        }
+
+        if ($this->_isBodyCompressed) {
+            return stream_for(zlib_encode((string) $this->_body, ZLIB_ENCODING_GZIP));
         }
 
         return $result;
@@ -794,6 +832,10 @@ class Request
     public function getResponse(
         Response $responseObject)
     {
+
+        // Set this request as the most recently processed request
+        $this->_parent->client->setLastRequest($this);
+
         // Check for API response success and put its response in the object.
         $this->_parent->client->mapServerResponse( // Throws.
             $responseObject,
@@ -802,5 +844,15 @@ class Request
         );
 
         return $responseObject;
+    }
+
+    /**
+     * Returns the endpoint URL (absolute or relative) of this request.
+     *
+     * @return string
+     */
+    public function getUrl()
+    {
+        return $this->_url;
     }
 }

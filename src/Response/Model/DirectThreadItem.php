@@ -12,6 +12,7 @@ use InstagramAPI\AutoPropertyMapper;
  * @method string getClientContext()
  * @method MediaShare getDirectMediaShare()
  * @method DirectExpiringSummary getExpiringMediaActionSummary()
+ * @method FelixShare getFelixShare()
  * @method mixed getHideInThread()
  * @method string getItemId()
  * @method mixed getItemType()
@@ -35,11 +36,13 @@ use InstagramAPI\AutoPropertyMapper;
  * @method mixed getTimestamp()
  * @method string getUserId()
  * @method VideoCallEvent getVideoCallEvent()
+ * @method VoiceMedia getVoiceMedia()
  * @method bool isActionLog()
  * @method bool isAnimatedMedia()
  * @method bool isClientContext()
  * @method bool isDirectMediaShare()
  * @method bool isExpiringMediaActionSummary()
+ * @method bool isFelixShare()
  * @method bool isHideInThread()
  * @method bool isItemId()
  * @method bool isItemType()
@@ -63,11 +66,13 @@ use InstagramAPI\AutoPropertyMapper;
  * @method bool isTimestamp()
  * @method bool isUserId()
  * @method bool isVideoCallEvent()
+ * @method bool isVoiceMedia()
  * @method $this setActionLog(ActionLog $value)
  * @method $this setAnimatedMedia(AnimatedMedia $value)
  * @method $this setClientContext(string $value)
  * @method $this setDirectMediaShare(MediaShare $value)
  * @method $this setExpiringMediaActionSummary(DirectExpiringSummary $value)
+ * @method $this setFelixShare(FelixShare $value)
  * @method $this setHideInThread(mixed $value)
  * @method $this setItemId(string $value)
  * @method $this setItemType(mixed $value)
@@ -91,11 +96,13 @@ use InstagramAPI\AutoPropertyMapper;
  * @method $this setTimestamp(mixed $value)
  * @method $this setUserId(string $value)
  * @method $this setVideoCallEvent(VideoCallEvent $value)
+ * @method $this setVoiceMedia(VoiceMedia $value)
  * @method $this unsetActionLog()
  * @method $this unsetAnimatedMedia()
  * @method $this unsetClientContext()
  * @method $this unsetDirectMediaShare()
  * @method $this unsetExpiringMediaActionSummary()
+ * @method $this unsetFelixShare()
  * @method $this unsetHideInThread()
  * @method $this unsetItemId()
  * @method $this unsetItemType()
@@ -119,6 +126,7 @@ use InstagramAPI\AutoPropertyMapper;
  * @method $this unsetTimestamp()
  * @method $this unsetUserId()
  * @method $this unsetVideoCallEvent()
+ * @method $this unsetVoiceMedia()
  */
 class DirectThreadItem extends AutoPropertyMapper
 {
@@ -140,6 +148,7 @@ class DirectThreadItem extends AutoPropertyMapper
     const LIVE_VIEWER_INVITE = 'live_viewer_invite';
     const PRODUCT_SHARE = 'product_share';
     const VIDEO_CALL_EVENT = 'video_call_event';
+    const VOICE_MEDIA = 'voice_media';
 
     const JSON_PROPERTY_MAP = [
         'item_id'                       => 'string',
@@ -170,5 +179,7 @@ class DirectThreadItem extends AutoPropertyMapper
         'video_call_event'              => 'VideoCallEvent',
         'product_share'                 => 'ProductShare',
         'animated_media'                => 'AnimatedMedia',
+        'felix_share'                   => 'FelixShare',
+        'voice_media'                   => 'VoiceMedia',
     ];
 }

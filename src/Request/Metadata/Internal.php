@@ -11,7 +11,7 @@ use InstagramAPI\Response\UploadPhotoResponse;
 use InstagramAPI\Response\UploadVideoResponse;
 use InstagramAPI\Utils;
 
-final class Internal
+class Internal
 {
     /** @var PhotoDetails */
     private $_photoDetails;

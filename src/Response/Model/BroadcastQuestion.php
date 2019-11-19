@@ -14,6 +14,10 @@ use InstagramAPI\AutoPropertyMapper;
  * @method User getUser()
  * @method bool isQid()
  * @method bool isSource()
+ * @method string getTimestamp()
+ * @method bool isTimestamp()
+ * @method $this setTimestamp(string $value)
+ * @method $this unsetTimestamp()
  * @method bool isStoryStickerText()
  * @method bool isText()
  * @method bool isUser()
@@ -36,5 +40,6 @@ class BroadcastQuestion extends AutoPropertyMapper
         'source'             => 'string',
         'user'               => 'User',
         'story_sticker_text' => 'string',
+        'timestamp'          => 'string',
     ];
 }

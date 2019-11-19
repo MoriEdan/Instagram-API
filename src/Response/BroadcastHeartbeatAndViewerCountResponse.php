@@ -18,6 +18,14 @@ use InstagramAPI\Response;
  * @method Model\_Message[] get_Messages()
  * @method bool isBroadcastStatus()
  * @method bool isCobroadcasterIds()
+ * @method int getIsPolicyViolation()
+ * @method string getPolicyViolationReason()
+ * @method bool isIsPolicyViolation()
+ * @method bool isPolicyViolationReason()
+ * @method $this setIsPolicyViolation(int $value)
+ * @method $this setPolicyViolationReason(string $value)
+ * @method $this unsetIsPolicyViolation()
+ * @method $this unsetPolicyViolationReason()
  * @method bool isIsTopLiveEligible()
  * @method bool isMessage()
  * @method bool isOffsetToVideoStart()
@@ -53,5 +61,7 @@ class BroadcastHeartbeatAndViewerCountResponse extends Response
         'total_unique_viewer_count' => 'int',
         'is_top_live_eligible'      => 'int',
         'cobroadcaster_ids'         => 'string[]',
+        'is_policy_violation'       => 'int',
+        'policy_violation_reason'   => 'string',
     ];
 }
