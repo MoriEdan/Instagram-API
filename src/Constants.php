@@ -6,9 +6,10 @@ class Constants
 {
     // Core API Constants.
     const API_URLS = [
-        1 => 'https://i.instagram.com/api/v1/',
-        2 => 'https://i.instagram.com/api/v2/',
+        1 => 'https://10.24.200.1/api/v1/',
+        2 => 'https://10.24.200.1/api/v2/',
     ];
+
     const IG_VERSION = '107.0.0.27.121';
     const VERSION_CODE = '168361634';
     const IG_SIG_KEY = 'c36436a942ea1dbb40d7f2d7d45280a620d991ce8c62fb4ce600f0a048c32c11';
