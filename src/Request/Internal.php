@@ -1761,7 +1761,7 @@ class Internal extends RequestCollection
     {
         $photoDetails = $internalMetadata->getPhotoDetails();
 
-        $endpoint = sprintf('https://i.instagram.com/rupload_igphoto/%s_%d_%d',
+        $endpoint = sprintf("https://".$this->ig->host."/rupload_igphoto/%s_%d_%d",
             $internalMetadata->getUploadId(),
             0,
             Utils::hashCode($photoDetails->getFilename())
@@ -1886,7 +1886,7 @@ class Internal extends RequestCollection
         // found" error when the final chunk has been uploaded.
         $sessionIDCookie = null;
         if ($targetFeed === Constants::FEED_TIMELINE_ALBUM) {
-            $foundCookie = $this->ig->client->getCookie('sessionid', 'i.instagram.com');
+            $foundCookie = $this->ig->client->getCookie('sessionid', $this->ig->host);
             if ($foundCookie !== null) {
                 $sessionIDCookie = $foundCookie->getValue();
             }
@@ -2075,7 +2075,7 @@ class Internal extends RequestCollection
 
         // This request gives us a stream identifier.
         $startRequest = new Request($this->ig, sprintf(
-            'https://i.instagram.com/rupload_igvideo/%s?segmented=true&phase=start',
+            "https://".$this->ig->host."/rupload_igvideo/%s?segmented=true&phase=start",
             Signatures::generateUUID()
         ));
         $startRequest
@@ -2094,7 +2094,7 @@ class Internal extends RequestCollection
             $waterfallId = Utils::generateUploadId();
             foreach ($segments as $segment) {
                 $endpoint = sprintf(
-                    'https://i.instagram.com/rupload_igvideo/%s-%d-%d?segmented=true&phase=transfer',
+                    "https://".$this->ig->host."/rupload_igvideo/%s-%d-%d?segmented=true&phase=transfer",
                     md5($segment->getFilename()),
                     0,
                     $segment->getFilesize()
@@ -2129,7 +2129,7 @@ class Internal extends RequestCollection
 
         // Finalize the upload.
         $endRequest = new Request($this->ig, sprintf(
-            'https://i.instagram.com/rupload_igvideo/%s?segmented=true&phase=end',
+            "https://".$this->ig->host."/rupload_igvideo/%s?segmented=true&phase=end",
             Signatures::generateUUID()
         ));
         $endRequest
@@ -2161,7 +2161,7 @@ class Internal extends RequestCollection
         $targetFeed,
         InternalMetadata $internalMetadata)
     {
-        $rurCookie = $this->ig->client->getCookie('rur', 'i.instagram.com');
+        $rurCookie = $this->ig->client->getCookie('rur', $this->ig->host);
         if ($rurCookie === null || $rurCookie->getValue() === '') {
             throw new \RuntimeException(
                 'Unable to find the necessary "rur" cookie for uploading video.'
@@ -2170,7 +2170,7 @@ class Internal extends RequestCollection
 
         $videoDetails = $internalMetadata->getVideoDetails();
 
-        $endpoint = sprintf('https://i.instagram.com/rupload_igvideo/%s_%d_%d?target=%s',
+        $endpoint = sprintf("https://".$this->ig->host."/rupload_igvideo/%s_%d_%d?target=%s",
             $internalMetadata->getUploadId(),
             0,
             Utils::hashCode($videoDetails->getFilename()),

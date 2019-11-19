@@ -46,7 +46,7 @@ class Auth implements AuthInterface
     /** {@inheritdoc} */
     public function getPassword()
     {
-        $cookie = $this->_instagram->client->getCookie('sessionid', 'i.instagram.com');
+        $cookie = $this->_instagram->client->getCookie('sessionid', $this->_instagram->host);
         if ($cookie !== null) {
             return sprintf('%s=%s', $cookie->getName(), $cookie->getValue());
         }

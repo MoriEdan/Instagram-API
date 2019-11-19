@@ -689,7 +689,7 @@ class Request
         $endpoint = $this->_url;
         // Determine the URI to use (it's either relative to API, or a full URI).
         if (strncmp($endpoint, 'http:', 5) !== 0 && strncmp($endpoint, 'https:', 6) !== 0) {
-            $endpoint = Constants::API_URLS[$this->_apiVersion].$endpoint;
+            $endpoint = str_replace("i.instagram.com", $this->_parent->host, Constants::API_URLS[$this->_apiVersion].$endpoint);
         }
         // Check signed request params flag.
         if ($this->_signedGet) {

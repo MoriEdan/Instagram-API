@@ -249,7 +249,7 @@ class Client
      */
     public function getToken()
     {
-        $cookie = $this->getCookie('csrftoken', 'i.instagram.com');
+        $cookie = $this->getCookie('csrftoken', $this->_parent->host);
         if ($cookie === null || $cookie->getValue() === '') {
             return null;
         }

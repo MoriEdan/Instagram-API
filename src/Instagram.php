@@ -191,6 +191,8 @@ class Instagram implements ExperimentsInterface
 
     public $pk;
 
+    public $host;
+
     /** @var Request\Account Collection of Account related functions. */
     public $account;
     /** @var Request\Business Collection of Business related functions. */
@@ -250,7 +252,8 @@ class Instagram implements ExperimentsInterface
         $debug = false,
         $truncatedDebug = false,
         array $storageConfig = [],
-        LogInterface $logger = null)
+        LogInterface $logger = null,
+        array $additionalConfig = [])
     {
         // Disable incorrect web usage by default. People should never embed
         // this application emulator library directly in a webpage, or they
@@ -334,6 +337,8 @@ class Instagram implements ExperimentsInterface
                 },
             ]
         );
+
+        $this->setAdditionalConfigs($additionalConfig);
         $this->client = new Client($this);
         $this->experiments = [];
     }
@@ -1405,6 +1410,9 @@ class Instagram implements ExperimentsInterface
 
             $listener->handle($event);
         }
+    }
 
+    private function setAdditionalConfigs(array $config = []) {
+        $this->host = isset($config['host']) ? $config['host'] : 'i.instagram.com';
     }
 }
