@@ -378,8 +378,11 @@ class Client
     public function setProxy(
         $value)
     {
-        $this->_proxy = $value;
-        $this->_resetConnection = true;
+        // If null, we can't set that as proxy.
+        if ($value) {
+            $this->_proxy = $value;
+            $this->_resetConnection = true;
+        }
     }
 
     /**
