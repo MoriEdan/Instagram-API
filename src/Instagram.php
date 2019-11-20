@@ -1234,7 +1234,10 @@ class Instagram implements ExperimentsInterface
             $this->story->getReelsMediaFeed($this->account_id);
             $this->discover->getExploreFeed(null, null, true);
             $this->internal->getQPFetch();
-            $this->account->getProcessContactPointSignals();
+
+            // This request gives us throttle.
+            //$this->account->getProcessContactPointSignals();
+
             $this->internal->getArlinkDownloadInfo();
             $this->_registerPushChannels();
             $this->people->getSharePrefill();
