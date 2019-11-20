@@ -421,6 +421,11 @@ class Request
             $this->_headers['X-IG-Bandwidth-TotalTime-MS'] = '0';
         }
 
+        if ($this->_parent->debug) {
+            $this->_headers['x-is-debug'] = 1;
+        }
+
+
         return $this;
     }
 
