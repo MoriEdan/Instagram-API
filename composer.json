@@ -41,7 +41,6 @@
     "require": {
         "php": ">=5.6",
         "lazyjsonmapper/lazyjsonmapper": "^1.6.1",
-        "guzzlehttp/guzzle": "^6.2",
         "ext-curl": "*",
         "ext-mbstring": "*",
         "ext-gd": "*",
@@ -57,7 +56,8 @@
         "psr/log": "^1.0",
         "valga/fbns-react": "^0.1.8",
         "symfony/process": "^3.4|^4.0",
-        "winbox/args": "1.0.0"
+        "winbox/args": "1.0.0",
+        "miljan9602/guzzle": "^6.9"
     },
     "suggest": {
         "ext-event": "Installing PHP's native Event extension enables faster Realtime class event handling."
