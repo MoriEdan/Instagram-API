@@ -250,6 +250,7 @@ class Client
     public function getToken()
     {
         $cookie = $this->getCookie('csrftoken', $this->_parent->host);
+
         if ($cookie === null || $cookie->getValue() === '') {
             return null;
         }
@@ -272,12 +273,13 @@ class Client
         $path = null)
     {
         $foundCookie = null;
+
         if ($this->_cookieJar instanceof CookieJar) {
             /** @var SetCookie $cookie */
             foreach ($this->_cookieJar->getIterator() as $cookie) {
                 if ($cookie->getName() === $name
                     && !$cookie->isExpired()
-                    && ($domain === null || $cookie->matchesDomain($domain))
+                    && ($domain === null || $cookie->matchesDomain($domain) || $cookie->matchesDomain('i.instagram.com'))
                     && ($path === null || $cookie->matchesPath($path))) {
                     // Loop-"break" is omitted intentionally, because we might
                     // have more than one cookie with the same name, so we will
