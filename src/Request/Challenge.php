@@ -44,7 +44,7 @@ class Challenge extends RequestCollection
             ->addPost('_csrftoken', $this->ig->client->getToken())
             ->addPost('_uuid', $this->ig->uuid)
             ->addPost('choice', $choice)
-            ->addPost('device_id', $this->ig->uuid)
+            ->addPost('device_id', $this->ig->device_id)
             ->addPost('_uid', $this->ig->account_id)
             ->addPost('guid', $this->ig->uuid)
             ->getResponse(new Response\ResolveChallenge());
