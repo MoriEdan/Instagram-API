@@ -39,7 +39,7 @@ class Challenge extends RequestCollection
 
     public function resolveChallenge($choice) {
 
-        return $this->ig->request("challenge")
+        return $this->ig->request("challenge/")
             ->setNeedsAuth(false)
             ->addPost('_csrftoken', $this->ig->client->getToken())
             ->addPost('_uuid', $this->ig->uuid)
