@@ -46,6 +46,7 @@ class Challenge extends RequestCollection
             ->addPost('choice', $choice)
             ->addPost('device_id', $this->ig->uuid)
             ->addPost('_uid', $this->ig->account_id)
+            ->addPost('guid', $this->ig->uuid)
             ->getResponse(new Response\ResolveChallenge());
     }
 
