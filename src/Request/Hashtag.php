@@ -91,10 +91,8 @@ class Hashtag extends RequestCollection
             $request->addPost('supported_tabs', '["top","recent","places","discover"]');
         }
 
-        if ($nextMediaIds !== null) {
-            if (!is_array($nextMediaIds) || !array_filter($nextMediaIds, 'is_int')) {
-                throw new \InvalidArgumentException('Next media IDs must be an Int[].');
-            }
+        if ($nextMediaIds !== null && is_array($nextMediaIds) && !empty($nextMediaIds)) {
+
             $request->addPost('next_media_ids', json_encode($nextMediaIds));
         }
         if ($maxId !== null) {
