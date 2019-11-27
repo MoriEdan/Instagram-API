@@ -827,6 +827,9 @@ class Client
         HttpRequestInterface $request,
         array $guzzleOptions = [])
     {
+
+        $deviceId = $this->_parent->device_id ? $this->_parent->device_id : $this->_parent->settings->get('device_id');
+
         // Set up headers that are required for every request.
         $request = modify_request($request, [
             'set_headers' => [
@@ -837,7 +840,7 @@ class Client
                 'Accept'           => '*/*',
                 'Accept-Encoding'  => Constants::ACCEPT_ENCODING,
                 'Accept-Language'  => Constants::ACCEPT_LANGUAGE,
-                'x-ig-device-id' => $this->_parent->device_id,
+                'x-ig-device-id' => $deviceId
             ],
         ]);
 
