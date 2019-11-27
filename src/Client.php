@@ -837,7 +837,7 @@ class Client
                 'Accept'           => '*/*',
                 'Accept-Encoding'  => Constants::ACCEPT_ENCODING,
                 'Accept-Language'  => Constants::ACCEPT_LANGUAGE,
-                'X-IG-Device-ID' => $this->_parent->device_id,
+                'x-ig-device-id' => $this->_parent->device_id,
             ],
         ]);
 
