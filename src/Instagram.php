@@ -106,6 +106,11 @@ class Instagram implements ExperimentsInterface
     public $uuid;
 
     /**
+     * @var String
+     */
+    public $httpSchema = null;
+
+    /**
      * Google Play Advertising ID.
      *
      * The advertising ID is a unique ID for advertising, provided by Google
@@ -1417,5 +1422,6 @@ class Instagram implements ExperimentsInterface
 
     private function setAdditionalConfigs(array $config = []) {
         $this->host = isset($config['host']) ? $config['host'] : 'i.instagram.com';
+        $this->httpSchema = isset($config['http_schema']) ? $config['http_schema'] : null;
     }
 }

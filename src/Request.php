@@ -696,6 +696,22 @@ class Request
         if (strncmp($endpoint, 'http:', 5) !== 0 && strncmp($endpoint, 'https:', 6) !== 0) {
             $endpoint = str_replace("i.instagram.com", $this->_parent->host, Constants::API_URLS[$this->_apiVersion].$endpoint);
         }
+
+        if ($this->_parent->httpSchema != null) {
+
+            if ($this->_parent->httpSchema == 'http') {
+
+                $endpoint = str_replace('https', $this->_parent->httpSchema, $endpoint);
+
+            } else if ($this->_parent->httpSchema == 'https') {
+
+                $endpoint = str_replace('http', $this->_parent->httpSchema, $endpoint);
+
+            }
+
+
+        }
+
         // Check signed request params flag.
         if ($this->_signedGet) {
             $this->_params = Signatures::signData($this->_params);
