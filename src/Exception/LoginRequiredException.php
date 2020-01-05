@@ -10,7 +10,7 @@ use Throwable;
  */
 class LoginRequiredException extends RequestException
 {
-    public function __construct($message = "", $code = 404, Throwable $previous = null) {
+    public function __construct($message = "", $code = 403, Throwable $previous = null) {
         parent::__construct($message, $code, $previous);
     }
 }
