@@ -14,12 +14,21 @@ use InstagramAPI\Response;
 class Challenge extends RequestCollection
 {
 
-    public function getInfo($pk, $nonce) {
+    public function getInfo($pk, $nonce, $url = null) {
 
-        $this->ig->settings->set('pk', $pk);
-        $this->ig->settings->set('nonce', $nonce);
+        if ($pk) {
+            $this->ig->settings->set('pk', $pk);
+        }
 
-        return $this->ig->request("challenge/$pk/$nonce/")
+        if ($nonce) {
+            $this->ig->settings->set('nonce', $nonce);
+        }
+
+        if (!$url) {
+           $url = "challenge/$pk/$nonce/";
+        }
+
+        return $this->ig->request($url)
             ->setNeedsAuth(false)
             ->addParam('device_id', $this->ig->uuid)
             ->getResponse(new Response\ChallengeInfoResponse());
