@@ -27,6 +27,10 @@ class Challenge extends RequestCollection
         if (!$url) {
            $url = "challenge/$pk/$nonce/";
         }
+        
+        if (substr( $url, 0, 1 ) == '/') {
+            $url = substr($url, 1);
+        }
 
         return $this->ig->request($url)
             ->setNeedsAuth(false)
